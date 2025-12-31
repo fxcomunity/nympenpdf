@@ -1,6 +1,16 @@
 import { Client } from "pg";
 
 export default async function handler(req, res) {
+  // Set CORS headers
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, x-admin-key');
+  
+  // Handle preflight
+  if (req.method === 'OPTIONS') {
+    return res.status(200).end();
+  }
+  
   if (req.method !== "POST") {
     return res.status(405).json({ error: "Method not allowed" });
   }
@@ -25,11 +35,11 @@ export default async function handler(req, res) {
     await client.connect();
 
     const result = await client.query(
-      `INSERT INTO public.documents (title, url)
-       VALUES ($1, $2)
+      `INSERT INTO public.documents (title, url, views, downloads, created_at, updated_at)
+       VALUES ($1, $2, $3, $4, NOW(), NOW())
        ON CONFLICT (url) DO NOTHING
-       RETURNING id, title, url`,
-      [title, url]
+       RETURNING id, title, url, views, downloads`,
+      [title, url, 0, 0]
     );
 
     await client.end();
@@ -40,6 +50,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({ success: true, data: result.rows[0] });
   } catch (err) {
+    console.error("Add doc error:", err);
     try { await client.end(); } catch (_) {}
     return res.status(500).json({ error: err.message });
   }
