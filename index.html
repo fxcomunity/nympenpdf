@@ -33,7 +33,9 @@
       <li><a href="#documents">Dokumen</a></li>
       <li><a href="#contact">Kontak</a></li>
       <li><a href="about.html">Tentang</a></li>
-      <li>
+
+      <!-- ✅ ADMIN AREA (AUTO SWITCH: LOGIN / PP ADMIN) -->
+      <li id="navAdminArea">
         <a href="login.html" class="nav-login-btn" aria-label="Login Admin">
           <i class="fas fa-user-lock"></i>
         </a>
@@ -52,9 +54,13 @@
     <a href="#documents">Dokumen</a>
     <a href="#contact">Kontak</a>
     <a href="about.html">Tentang</a>
-    <a href="login.html" class="mobile-login">
-      <i class="fas fa-user-lock"></i> Login Admin
-    </a>
+
+    <!-- ✅ ADMIN AREA (AUTO SWITCH MOBILE) -->
+    <div id="mobileAdminArea">
+      <a href="login.html" class="mobile-login">
+        <i class="fas fa-user-lock"></i> Login Admin
+      </a>
+    </div>
   </div>
 </header>
 
@@ -114,7 +120,6 @@
 
       <!-- ✅ SEARCH BAR -->
       <div class="search-wrapper reveal">
-
         <div class="search-input-box">
           <i class="fas fa-search search-icon"></i>
 
@@ -256,12 +261,16 @@
   </div>
 </footer>
 
+<!-- ✅ SCRIPT: YEAR -->
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
+</script>
 
-  // mobile nav
+<!-- ✅ SCRIPT: MOBILE NAV -->
+<script>
   const btn = document.getElementById("mobileMenuBtn");
   const nav = document.getElementById("mobileNav");
+
   btn.addEventListener("click", () => {
     nav.classList.toggle("show");
     btn.classList.toggle("active");
@@ -273,8 +282,10 @@
       btn.classList.remove("active");
     });
   });
+</script>
 
-  // reveal
+<!-- ✅ SCRIPT: REVEAL ANIMATION -->
+<script>
   const reveals = document.querySelectorAll(".reveal");
   const obs = new IntersectionObserver((entries) => {
     entries.forEach(e => {
@@ -285,6 +296,69 @@
   reveals.forEach(el => obs.observe(el));
 </script>
 
+<!-- ✅ SCRIPT: ADMIN PROFILE + MAINTENANCE -->
+<script>
+  async function checkMaintenanceMode() {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+
+      // ✅ kalau maintenance ON dan admin tidak login
+      if (data.maintenance === true && !localStorage.getItem("ADMIN_KEY")) {
+        window.location.href = "maintenance.html";
+      }
+    } catch (err) {
+      console.log("Maintenance check gagal:", err);
+    }
+  }
+
+  function setupAdminProfileUI() {
+    const adminKey = localStorage.getItem("ADMIN_KEY");
+    const adminName = localStorage.getItem("ADMIN_USERNAME") || "Admin";
+
+    const navAdminArea = document.getElementById("navAdminArea");
+    const mobileAdminArea = document.getElementById("mobileAdminArea");
+
+    // ✅ kalau admin sudah login
+    if (adminKey) {
+      const avatarHTML = `
+        <a href="admin.html" class="nav-avatar-btn"
+           style="display:flex;align-items:center;gap:10px;color:white;text-decoration:none;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#00f2fe;
+                      display:flex;align-items:center;justify-content:center;
+                      font-weight:700;color:#1a2a3a;">
+            ${adminName.charAt(0).toUpperCase()}
+          </div>
+          <span style="font-size:14px;font-weight:600;">${adminName}</span>
+        </a>
+      `;
+
+      if (navAdminArea) navAdminArea.innerHTML = avatarHTML;
+
+      if (mobileAdminArea) {
+        mobileAdminArea.innerHTML = `
+          <a href="admin.html" class="mobile-login"
+             style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#00f2fe;
+                        display:flex;align-items:center;justify-content:center;
+                        font-weight:700;color:#1a2a3a;">
+              ${adminName.charAt(0).toUpperCase()}
+            </div>
+            Dashboard Admin
+          </a>
+        `;
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await checkMaintenanceMode();
+    setupAdminProfileUI();
+  });
+</script>
+
+<!-- ✅ MAIN SCRIPT (ambil pdf dari neon) -->
 <script src="script.js"></script>
+
 </body>
 </html>
