@@ -4,33 +4,6 @@
 let pdfList = []; // format: [title, url, id, views, downloads]
 
 // =====================================================
-// API BASE PATH DETECTOR (SUPPORT /website12/api/...)
-// =====================================================
-function getApiBase() {
-  // kalau user set API path di localStorage
-  const saved = localStorage.getItem("API_DOCS");
-  if (saved) {
-    // contoh: "/website12/api/docs"
-    return saved.replace("/docs", "");
-  }
-
-  // auto detect folder website12
-  const path = window.location.pathname;
-  const parts = path.split("/").filter(Boolean);
-
-  // Kalau admin.html di /website12/admin.html
-  if (parts.length > 1) return `/${parts[0]}/api`;
-
-  // Kalau admin.html di /admin.html
-  return `/api`;
-}
-
-const API_BASE = getApiBase();
-const API_DOCS = `${API_BASE}/docs`;
-const API_ADD = `${API_BASE}/add-doc`;
-const API_DELETE = `${API_BASE}/delete-doc`;
-
-// =====================================================
 // ADMIN KEY (PRIVATE) - disimpan di localStorage
 // =====================================================
 function getAdminKey() {
@@ -60,37 +33,12 @@ function driveDownload(url) {
 }
 
 // =====================================================
-// UPDATE STATS (Dashboard + Statistik)
-// =====================================================
-function updateAllStats(data) {
-  const totalViews = data.reduce((sum, d) => sum + (d.views || 0), 0);
-  const totalDownloads = data.reduce((sum, d) => sum + (d.downloads || 0), 0);
-  const totalDocs = data.length;
-
-  // Dashboard stats
-  document.getElementById("total-files")?.textContent = totalDocs.toLocaleString("id-ID");
-  document.getElementById("total-views")?.textContent = totalViews.toLocaleString("id-ID");
-  document.getElementById("total-downloads")?.textContent = totalDownloads.toLocaleString("id-ID");
-
-  // Statistik page stats
-  document.getElementById("statDocs")?.textContent = totalDocs.toLocaleString("id-ID");
-  document.getElementById("statViews")?.textContent = totalViews.toLocaleString("id-ID");
-  document.getElementById("statDownloads")?.textContent = totalDownloads.toLocaleString("id-ID");
-
-  // Public stats (kalau ada)
-  document.getElementById("total-docs")?.textContent = totalDocs.toLocaleString("id-ID");
-}
-
-// =====================================================
 // LOAD DATA FROM API (NEON DB)
 // =====================================================
-async function loadDocsFromDB(force = false) {
+async function loadDocsFromDB() {
   try {
-    const res = await fetch(API_DOCS);
-    if (!res.ok) throw new Error(`API error: ${res.status}`);
-
+    const res = await fetch("/api/docs");
     const data = await res.json();
-    if (!Array.isArray(data)) throw new Error("Response bukan array");
 
     // convert DB rows => format array lama
     pdfList = data.map((d) => [
@@ -101,24 +49,26 @@ async function loadDocsFromDB(force = false) {
       d.downloads || 0,
     ]);
 
-    updateAllStats(data);
+    // Total views / downloads dari DB
+    const totalViews = data.reduce((sum, d) => sum + (d.views || 0), 0);
+    const totalDownloads = data.reduce((sum, d) => sum + (d.downloads || 0), 0);
 
-    // render
+    const viewsEl = document.getElementById("total-views");
+    if (viewsEl) viewsEl.textContent = totalViews.toLocaleString("id-ID");
+
+    const downloadsEl = document.getElementById("total-downloads");
+    if (downloadsEl) downloadsEl.textContent = totalDownloads.toLocaleString("id-ID");
+
     renderPublic(pdfList);
     renderAdmin(pdfList);
 
-    // init sekali aja
-    if (!window.__INIT_DONE__) {
-      initPublicSearch();
-      initAdminSearch();
-      initContactForm();
-      initAdminKeyPrompt();
-      initAdminAddDoc();
-      window.__INIT_DONE__ = true;
-    }
-
+    initPublicSearch();
+    initAdminSearch();
+    initContactForm();
+    initAdminKeyPrompt();
+    initAdminAddDoc();
   } catch (err) {
-    console.error("❌ Gagal load data dari Neon:", err);
+    console.error("Gagal load data dari Neon:", err);
   }
 }
 
@@ -127,12 +77,14 @@ async function loadDocsFromDB(force = false) {
 // =====================================================
 function renderPublic(list) {
   const publicContainer = document.getElementById("public-files-container");
+  const totalDocs = document.getElementById("total-docs");
   if (!publicContainer) return;
 
   publicContainer.innerHTML = "";
 
   if (!list.length) {
     publicContainer.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
+    if (totalDocs) totalDocs.textContent = "0";
     return;
   }
 
@@ -142,7 +94,9 @@ function renderPublic(list) {
 
     card.innerHTML = `
       <div class="pdf-card-top">
-        <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+        <div class="pdf-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
         <div class="pdf-info">
           <h4 class="pdf-title">${title}</h4>
           <p class="pdf-subtitle">Dokumen PDF • FX Material</p>
@@ -162,10 +116,12 @@ function renderPublic(list) {
 
     publicContainer.appendChild(card);
   });
+
+  if (totalDocs) totalDocs.textContent = list.length;
 }
 
 // =====================================================
-// RENDER ADMIN + DELETE BUTTON
+// RENDER ADMIN + DELETE BUTTON (VIEWER TRACKING)
 // =====================================================
 function renderAdmin(list) {
   const adminGrid = document.getElementById("admin-files-grid");
@@ -184,7 +140,9 @@ function renderAdmin(list) {
 
     card.innerHTML = `
       <div class="pdf-card-top">
-        <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+        <div class="pdf-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
         <div class="pdf-info">
           <h4 class="pdf-title">${title}</h4>
           <p class="pdf-subtitle">
@@ -208,13 +166,17 @@ function renderAdmin(list) {
       </div>
     `;
 
+    // delete handler (PRIVATE)
     card.querySelector(".btn-delete").addEventListener("click", async () => {
       if (!confirm("Yakin mau hapus dokumen ini?")) return;
 
       const adminKey = getAdminKey();
-      if (!adminKey) return alert("⚠️ Masukkan ADMIN KEY dulu!");
+      if (!adminKey) {
+        alert("⚠️ Masukkan ADMIN KEY dulu!");
+        return;
+      }
 
-      const response = await fetch(API_DELETE, {
+      const response = await fetch("/api/delete-doc", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -224,7 +186,10 @@ function renderAdmin(list) {
       });
 
       const result = await response.json();
-      if (result.error) return alert("❌ " + result.error);
+      if (result.error) {
+        alert("❌ " + result.error);
+        return;
+      }
 
       loadDocsFromDB();
     });
@@ -232,7 +197,11 @@ function renderAdmin(list) {
     adminGrid.appendChild(card);
   });
 
-  document.getElementById("last-update")?.textContent = new Date().toLocaleString("id-ID");
+  const totalFiles = document.getElementById("total-files");
+  if (totalFiles) totalFiles.textContent = list.length;
+
+  const lastUpdate = document.getElementById("last-update");
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleString("id-ID");
 }
 
 // =====================================================
@@ -253,7 +222,12 @@ function initPublicSearch() {
   }
 
   searchInput.addEventListener("input", filterPublic);
+  searchInput.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") filterPublic();
+  });
+
   searchBtn?.addEventListener("click", filterPublic);
+
   clearSearch?.addEventListener("click", () => {
     searchInput.value = "";
     filterPublic();
@@ -312,7 +286,7 @@ function initAdminAddDoc() {
     if (!adminKey) return alert("⚠️ Masukkan ADMIN KEY dulu!");
     if (!title || !url) return alert("Judul dan URL wajib diisi!");
 
-    const response = await fetch(API_ADD, {
+    const response = await fetch("/api/add-doc", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -324,7 +298,12 @@ function initAdminAddDoc() {
     const result = await response.json();
     if (result.error) return alert("❌ " + result.error);
 
-    alert(result.duplicated ? "⚠️ Dokumen sudah ada (URL duplikat)." : "✅ Dokumen berhasil ditambahkan!");
+    if (result.duplicated) {
+      alert("⚠️ Dokumen sudah ada (URL duplikat).");
+    } else {
+      alert("✅ Dokumen berhasil ditambahkan!");
+    }
+
     titleInput.value = "";
     urlInput.value = "";
     loadDocsFromDB();
@@ -350,14 +329,11 @@ function initContactForm() {
 }
 
 // =====================================================
-// INIT ✅
+// INIT ✅ + POLLING REALTIME (OPSIONAL)
 // =====================================================
 document.addEventListener("DOMContentLoaded", () => {
   loadDocsFromDB();
 
-  // ✅ polling optional (matikan default biar gak error spam neon)
-  // setInterval(loadDocsFromDB, 3000);
+  // ✅ realtime update tiap 3 detik (bisa kamu matiin kalau berat)
+  setInterval(loadDocsFromDB, 3000);
 });
-
-// expose supaya admin.html bisa call refresh stats
-window.loadDocsFromDB = loadDocsFromDB;
