@@ -9,6 +9,9 @@
   <link rel="icon" type="image/png"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
 
+  <!-- ✅ FONT AWESOME -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+
   <!-- ✅ STYLESHEET -->
   <style>
     * {
@@ -259,88 +262,133 @@
       box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
     }
 
-    /* Table */
-    .data-table {
+    /* FORM + SEARCH */
+    .admin-tools {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .admin-tools input {
+      padding: 12px 14px;
+      border: 1px solid #e0e6ed;
+      border-radius: 12px;
+      outline: none;
+      font-size: 15px;
       width: 100%;
-      border-collapse: collapse;
     }
 
-    .data-table th {
-      text-align: left;
-      padding: 16px 20px;
-      background: #f8f9fa;
-      color: #555;
-      font-weight: 600;
-      border-bottom: 2px solid #e0e6ed;
+    .admin-tools input:focus {
+      border-color: #4facfe;
     }
 
-    .data-table td {
-      padding: 16px 20px;
-      border-bottom: 1px solid #e0e6ed;
-    }
-
-    .data-table tr:hover {
-      background: #f8f9fa;
-    }
-
-    .badge {
-      display: inline-block;
-      padding: 5px 12px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .badge-success {
-      background: rgba(106, 176, 76, 0.1);
-      color: #6ab04c;
-    }
-
-    .badge-warning {
-      background: rgba(245, 203, 92, 0.1);
-      color: #f5cb5c;
-    }
-
-    .action-buttons {
+    .admin-key-box {
       display: flex;
-      gap: 8px;
+      gap: 10px;
+      margin-bottom: 20px;
     }
 
-    .action-btn {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
+    .admin-key-box input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1px solid #e0e6ed;
+      border-radius: 12px;
+      outline: none;
+    }
+
+    .admin-key-box button {
+      padding: 12px 16px;
+      border-radius: 12px;
+      border: none;
+      background: #1a2a3a;
+      color: white;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .admin-key-box button:hover {
+      opacity: 0.9;
+    }
+
+    /* GRID PDF CARD (dari script.js) */
+    #admin-files-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+      margin-top: 20px;
+    }
+
+    .pdf-card {
+      background: #f8f9fa;
+      border-radius: 16px;
+      padding: 18px;
+      border: 1px solid #e0e6ed;
+    }
+
+    .pdf-card-top {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .pdf-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 12px;
+      background: rgba(255, 107, 107, 0.1);
       display: flex;
       align-items: center;
       justify-content: center;
-      cursor: pointer;
-      transition: all 0.3s;
+      color: #ff6b6b;
+      font-size: 20px;
+    }
+
+    .pdf-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a2a3a;
+      margin-bottom: 4px;
+    }
+
+    .pdf-subtitle {
+      font-size: 13px;
+      color: #777;
+    }
+
+    .pdf-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn-preview, .btn-download, .btn-delete {
+      padding: 10px 14px;
+      border-radius: 12px;
       border: none;
-      color: white;
+      cursor: pointer;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
     }
 
-    .edit-btn {
-      background: #4facfe;
-    }
+    .btn-preview { background: #4facfe; color: white; }
+    .btn-download { background: #6ab04c; color: white; }
+    .btn-delete { background: #ff6b6b; color: white; }
 
-    .delete-btn {
-      background: #ff6b6b;
-    }
-
-    .action-btn:hover {
+    .btn-preview:hover, .btn-download:hover, .btn-delete:hover {
       opacity: 0.9;
-      transform: scale(1.1);
+      transform: translateY(-1px);
     }
 
     /* Responsif */
     @media (max-width: 1024px) {
-      .sidebar {
-        width: 220px;
-      }
-      
-      .main-content {
-        margin-left: 220px;
-      }
+      .sidebar { width: 220px; }
+      .main-content { margin-left: 220px; }
     }
 
     @media (max-width: 768px) {
@@ -348,25 +396,20 @@
         transform: translateX(-100%);
         transition: transform 0.3s;
       }
-      
-      .sidebar.active {
-        transform: translateX(0);
-      }
-      
-      .main-content {
-        margin-left: 0;
-      }
-      
+      .sidebar.active { transform: translateX(0); }
+      .main-content { margin-left: 0; }
       .menu-toggle {
         display: block;
         font-size: 24px;
         cursor: pointer;
         color: #1a2a3a;
       }
+      .admin-tools { grid-template-columns: 1fr; }
     }
   </style>
 
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+  <!-- ✅ SCRIPT GLOBAL (neon) -->
+  <script src="script.js" defer></script>
 </head>
 
 <body>
@@ -424,7 +467,7 @@
         <div class="stat-icon">
           <i class="fas fa-file-pdf"></i>
         </div>
-        <h3>142</h3>
+        <h3 id="total-files">0</h3>
         <p>Total Dokumen PDF</p>
       </div>
       
@@ -453,136 +496,53 @@
       </div>
     </div>
 
-    <!-- Recent Documents Section -->
+    <!-- Dokumen Database Section -->
     <div class="content-section">
       <div class="section-header">
-        <h2><i class="fas fa-file-pdf" style="margin-right: 10px; color: #4facfe;"></i> Dokumen Terbaru</h2>
-        <button class="btn-primary"><i class="fas fa-plus"></i> Tambah Dokumen</button>
+        <h2><i class="fas fa-file-pdf" style="margin-right: 10px; color: #4facfe;"></i> Dokumen dari Database</h2>
+        <div style="font-size: 14px; color: #777;">
+          Last update: <span id="last-update">-</span>
+        </div>
       </div>
-      
-      <div style="overflow-x: auto;">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Nama Dokumen</th>
-              <th>Kategori</th>
-              <th>Tanggal Upload</th>
-              <th>Status</th>
-              <th>Views</th>
-              <th>Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Panduan Forex Dasar.pdf</td>
-              <td>Forex</td>
-              <td>15 Mar 2023</td>
-              <td><span class="badge badge-success">Publik</span></td>
-              <td>1,842</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Analisis Teknikal Lengkap.pdf</td>
-              <td>Analisis</td>
-              <td>10 Mar 2023</td>
-              <td><span class="badge badge-success">Publik</span></td>
-              <td>2,451</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Strategi Trading Harian.pdf</td>
-              <td>Trading</td>
-              <td>05 Mar 2023</td>
-              <td><span class="badge badge-warning">Draft</span></td>
-              <td>0</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Manajemen Risiko Forex.pdf</td>
-              <td>Manajemen</td>
-              <td>28 Feb 2023</td>
-              <td><span class="badge badge-success">Publik</span></td>
-              <td>1,125</td>
-              <td>
-                <div class="action-buttons">
-                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
-                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
 
-    <!-- Recent Activity Section -->
-    <div class="content-section">
-      <div class="section-header">
-        <h2><i class="fas fa-history" style="margin-right: 10px; color: #4facfe;"></i> Aktivitas Terkini</h2>
+      <!-- ✅ ADMIN KEY BOX -->
+      <div class="admin-key-box">
+        <input type="password" id="adminKeyInput" placeholder="Masukkan ADMIN KEY (untuk add/delete)" />
+        <button id="saveAdminKeyBtn"><i class="fas fa-key"></i> Simpan Key</button>
       </div>
-      
-      <div style="display: flex; flex-direction: column; gap: 15px;">
-        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-          <div style="width: 40px; height: 40px; background: rgba(79, 172, 254, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #4facfe;">
-            <i class="fas fa-upload"></i>
-          </div>
-          <div>
-            <div style="font-weight: 600;">Dokumen baru diunggah</div>
-            <div style="font-size: 14px; color: #666;">"Panduan Indikator Forex" diunggah oleh Admin • 2 jam yang lalu</div>
-          </div>
-        </div>
-        
-        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-          <div style="width: 40px; height: 40px; background: rgba(106, 176, 76, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #6ab04c;">
-            <i class="fas fa-user-plus"></i>
-          </div>
-          <div>
-            <div style="font-weight: 600;">Pengguna baru terdaftar</div>
-            <div style="font-size: 14px; color: #666;">25 pengguna baru hari ini • Total: 1,248 pengguna</div>
-          </div>
-        </div>
-        
-        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
-          <div style="width: 40px; height: 40px; background: rgba(245, 203, 92, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #f5cb5c;">
-            <i class="fas fa-cog"></i>
-          </div>
-          <div>
-            <div style="font-weight: 600;">Pengaturan diperbarui</div>
-            <div style="font-size: 14px; color: #666;">Konfigurasi keamanan diperbarui • 5 jam yang lalu</div>
-          </div>
-        </div>
+
+      <!-- ✅ ADD DOC FORM -->
+      <div class="admin-tools">
+        <input type="text" id="newTitle" placeholder="Judul Dokumen PDF" />
+        <input type="text" id="newUrl" placeholder="Link Google Drive PDF" />
       </div>
+
+      <button class="btn-primary" id="addDocBtn">
+        <i class="fas fa-plus"></i> Tambah Dokumen
+      </button>
+
+      <!-- ✅ SEARCH ADMIN -->
+      <div style="margin-top: 20px;">
+        <input id="admin-search" placeholder="Cari dokumen..." style="width:100%; padding: 14px; border-radius: 12px; border:1px solid #e0e6ed;">
+      </div>
+
+      <!-- ✅ GRID OUTPUT DARI JS -->
+      <div id="admin-files-grid"></div>
     </div>
   </div>
 
+  <!-- ✅ SCRIPT kecil untuk sidebar + logout -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Toggle menu untuk mobile
       const menuToggle = document.getElementById('menuToggle');
       const sidebar = document.getElementById('sidebar');
-      
+
       if (menuToggle) {
         menuToggle.addEventListener('click', function() {
           sidebar.classList.toggle('active');
         });
       }
-      
-      // Logout konfirmasi
+
       const logoutBtn = document.querySelector('.logout-btn');
       if (logoutBtn) {
         logoutBtn.addEventListener('click', function(e) {
@@ -591,13 +551,6 @@
           }
         });
       }
-      
-      // Simulasi data real-time
-      setInterval(function() {
-        // Update waktu "x jam yang lalu"
-        const timeElements = document.querySelectorAll('.content-section .fa-history ~ div');
-        // Di sini bisa diisi dengan logika update waktu real
-      }, 60000);
     });
   </script>
 </body>
