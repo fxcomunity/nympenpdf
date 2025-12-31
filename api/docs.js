@@ -14,7 +14,7 @@ export default async function handler(req, res) {
     await client.connect();
 
     const result = await client.query(
-      "SELECT id, title, url FROM public.documents ORDER BY id DESC"
+      "SELECT id, title, url, views, downloads FROM public.documents ORDER BY id DESC"
     );
 
     await client.end();
