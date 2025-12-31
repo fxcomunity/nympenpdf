@@ -3,206 +3,602 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin Panel - Dokumentasi PDF FX</title>
+  <title>Dashboard Admin | Dokumentasi PDF FX</title>
 
+  <!-- ✅ FAVICON -->
   <link rel="icon" type="image/png"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
 
-  <link rel="stylesheet" href="style.css?v=9999" />
+  <!-- ✅ STYLESHEET -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: #f5f7fa;
+      color: #333;
+      min-height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      width: 250px;
+      height: 100vh;
+      background: linear-gradient(180deg, #1a2a3a 0%, #0d1520 100%);
+      color: white;
+      padding: 25px 0;
+      box-shadow: 5px 0 15px rgba(0, 0, 0, 0.1);
+      z-index: 1000;
+    }
+
+    .logo-area {
+      text-align: center;
+      padding: 0 20px 30px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 25px;
+    }
+
+    .logo {
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 24px;
+    }
+
+    .logo-area h2 {
+      font-size: 20px;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .nav-menu {
+      list-style: none;
+      padding: 0 20px;
+    }
+
+    .nav-menu li {
+      margin-bottom: 5px;
+    }
+
+    .nav-menu a {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      padding: 14px 18px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+
+    .nav-menu a:hover, .nav-menu a.active {
+      background: rgba(79, 172, 254, 0.15);
+      color: white;
+    }
+
+    .nav-menu a i {
+      width: 20px;
+      text-align: center;
+    }
+
+    .logout-btn {
+      position: absolute;
+      bottom: 30px;
+      left: 20px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: #ff6b6b;
+      text-decoration: none;
+      padding: 14px 18px;
+      border-radius: 10px;
+      background: rgba(255, 107, 107, 0.1);
+      transition: all 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(255, 107, 107, 0.2);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 250px;
+      padding: 30px;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 40px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #e0e6ed;
+    }
+
+    .header h1 {
+      color: #1a2a3a;
+      font-size: 28px;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: white;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    }
+
+    .user-avatar {
+      width: 45px;
+      height: 45px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+    }
+
+    /* Stats Cards */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 25px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+      transition: transform 0.3s;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .stat-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .stat-card:nth-child(1) .stat-icon {
+      background: rgba(79, 172, 254, 0.1);
+      color: #4facfe;
+    }
+
+    .stat-card:nth-child(2) .stat-icon {
+      background: rgba(255, 107, 107, 0.1);
+      color: #ff6b6b;
+    }
+
+    .stat-card:nth-child(3) .stat-icon {
+      background: rgba(106, 176, 76, 0.1);
+      color: #6ab04c;
+    }
+
+    .stat-card:nth-child(4) .stat-icon {
+      background: rgba(245, 203, 92, 0.1);
+      color: #f5cb5c;
+    }
+
+    .stat-card h3 {
+      font-size: 32px;
+      margin-bottom: 5px;
+      color: #1a2a3a;
+    }
+
+    .stat-card p {
+      color: #666;
+      font-size: 15px;
+    }
+
+    /* Content Sections */
+    .content-section {
+      background: white;
+      border-radius: 15px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+
+    .section-header h2 {
+      color: #1a2a3a;
+      font-size: 22px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.3s;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+    }
+
+    /* Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .data-table th {
+      text-align: left;
+      padding: 16px 20px;
+      background: #f8f9fa;
+      color: #555;
+      font-weight: 600;
+      border-bottom: 2px solid #e0e6ed;
+    }
+
+    .data-table td {
+      padding: 16px 20px;
+      border-bottom: 1px solid #e0e6ed;
+    }
+
+    .data-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .badge-success {
+      background: rgba(106, 176, 76, 0.1);
+      color: #6ab04c;
+    }
+
+    .badge-warning {
+      background: rgba(245, 203, 92, 0.1);
+      color: #f5cb5c;
+    }
+
+    .action-buttons {
+      display: flex;
+      gap: 8px;
+    }
+
+    .action-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: none;
+      color: white;
+    }
+
+    .edit-btn {
+      background: #4facfe;
+    }
+
+    .delete-btn {
+      background: #ff6b6b;
+    }
+
+    .action-btn:hover {
+      opacity: 0.9;
+      transform: scale(1.1);
+    }
+
+    /* Responsif */
+    @media (max-width: 1024px) {
+      .sidebar {
+        width: 220px;
+      }
+      
+      .main-content {
+        margin-left: 220px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.3s;
+      }
+      
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      
+      .main-content {
+        margin-left: 0;
+      }
+      
+      .menu-toggle {
+        display: block;
+        font-size: 24px;
+        cursor: pointer;
+        color: #1a2a3a;
+      }
+    }
+  </style>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 
-<body class="admin-theme">
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="logo-area">
+      <div class="logo">
+        <i class="fas fa-user-shield"></i>
+      </div>
+      <h2>Admin Panel</h2>
+      <p style="font-size: 12px; color: rgba(255,255,255,0.6); margin-top: 5px;">Dokumentasi PDF FX</p>
+    </div>
 
-<!-- ✅ HEADER ADMIN -->
-<header class="admin-header">
-  <nav class="nav-container">
-
-    <a class="logo" href="admin.html" aria-label="Admin Panel">
-      <span style="display:inline-flex;align-items:center;gap:10px;">
-        <i class="fa-solid fa-gauge-high" style="color: var(--primary); font-size:18px;"></i>
-        <span>Admin Panel</span>
-      </span>
-    </a>
-
-    <!-- Desktop links -->
-    <ul class="nav-links desktop-nav">
-      <li><a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public</a></li>
-      <li><a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a></li>
-      <li><a href="#info"><i class="fa-solid fa-circle-info"></i> Info</a></li>
-      <li>
-        <button id="logoutBtn" class="logout-btn" type="button">
-          <i class="fa-solid fa-right-from-bracket"></i> Logout
-        </button>
-      </li>
+    <ul class="nav-menu">
+      <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a href="#"><i class="fas fa-file-pdf"></i> Dokumen PDF</a></li>
+      <li><a href="#"><i class="fas fa-users"></i> Pengguna</a></li>
+      <li><a href="#"><i class="fas fa-chart-bar"></i> Statistik</a></li>
+      <li><a href="#"><i class="fas fa-cog"></i> Pengaturan</a></li>
+      <li><a href="#"><i class="fas fa-history"></i> Aktivitas</a></li>
     </ul>
 
-    <!-- ✅ Mobile menu button -->
-    <button class="mobile-menu-btn" id="menuBtn" type="button" aria-label="Menu">
-      <i class="fa-solid fa-bars"></i>
-    </button>
-  </nav>
-
-  <!-- ✅ Mobile nav panel -->
-  <div class="mobile-nav" id="mobileNav">
-    <a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public</a>
-    <a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a>
-    <a href="#info"><i class="fa-solid fa-circle-info"></i> Info</a>
-    <a href="javascript:void(0)" id="logoutBtnMobile" class="mobile-login">
-      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    <a href="login.html" class="logout-btn">
+      <i class="fas fa-sign-out-alt"></i>
+      <span>Keluar</span>
     </a>
   </div>
-</header>
 
-<main>
-
-  <!-- ✅ HERO ADMIN -->
-  <section class="hero" style="min-height:auto; padding:90px 0 40px;">
-    <div class="container hero-content">
-      <div class="hero-badge reveal">
-        <i class="fa-solid fa-shield"></i>
-        <span>Mode Admin • Akses Internal</span>
+  <!-- Main Content -->
+  <div class="main-content">
+    <!-- Header -->
+    <div class="header">
+      <div>
+        <h1>Dashboard Admin</h1>
+        <p style="color: #666; margin-top: 5px;">Selamat datang kembali, Administrator</p>
       </div>
-
-      <h1 class="hero-title reveal">
-        <span class="gradient-text">Kelola Dokumen</span><br />
-        Panel Admin PDF
-      </h1>
-
-      <p class="hero-description reveal" style="max-width:760px;">
-        Cari PDF dengan cepat, cek jumlah dokumen, dan akses download/preview seperti di public
-        tapi dengan tema admin yang berbeda.
-      </p>
-
-      <div class="hero-stats reveal" id="info">
-        <div class="stat-item">
-          <div class="stat-number" id="total-files">0</div>
-          <div class="stat-label">Total Dokumen</div>
+      
+      <div class="user-info">
+        <div class="user-avatar">
+          <i class="fas fa-user"></i>
         </div>
-        <div class="stat-item">
-          <div class="stat-number" id="last-update">-</div>
-          <div class="stat-label">Terakhir Update</div>
+        <div>
+          <div style="font-weight: 600;">Admin Utama</div>
+          <div style="font-size: 13px; color: #666;">admin@pdffx.com</div>
         </div>
-        <div class="stat-item">
-          <div class="stat-number">Admin</div>
-          <div class="stat-label">Akses Khusus</div>
+        <div class="menu-toggle" id="menuToggle" style="display: none;">
+          <i class="fas fa-bars"></i>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- ✅ FILES -->
-  <section id="files" style="padding-top:40px;">
-    <div class="container">
-      <h2 class="section-title reveal">Dokumen Admin</h2>
-      <p class="section-subtitle reveal">Cari cepat dan akses PDF dari panel admin.</p>
-
-      <!-- ✅ ADMIN SEARCH (full width) -->
-      <div class="search-wrapper reveal">
-        <div class="search-input-box">
-          <i class="fas fa-search search-icon"></i>
-          <input type="text" id="admin-search" placeholder="Cari dokumen di admin..." autocomplete="off" />
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-file-pdf"></i>
         </div>
-        <button class="search-btn" type="button" aria-label="Cari">
-          <i class="fas fa-arrow-right"></i>
-        </button>
+        <h3>142</h3>
+        <p>Total Dokumen PDF</p>
       </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-users"></i>
+        </div>
+        <h3>1,248</h3>
+        <p>Pengguna Terdaftar</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-download"></i>
+        </div>
+        <h3>3,841</h3>
+        <p>Total Download</p>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <i class="fas fa-eye"></i>
+        </div>
+        <h3>24,592</h3>
+        <p>Total Dilihat</p>
+      </div>
+    </div>
 
-      <!-- ✅ GRID -->
-      <div class="documents-grid reveal" id="admin-files-grid">
-        <div class="loading-state">
-          <i class="fas fa-spinner fa-spin"></i>
-          <p>Memuat dokumen admin...</p>
+    <!-- Recent Documents Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-file-pdf" style="margin-right: 10px; color: #4facfe;"></i> Dokumen Terbaru</h2>
+        <button class="btn-primary"><i class="fas fa-plus"></i> Tambah Dokumen</button>
+      </div>
+      
+      <div style="overflow-x: auto;">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Nama Dokumen</th>
+              <th>Kategori</th>
+              <th>Tanggal Upload</th>
+              <th>Status</th>
+              <th>Views</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Panduan Forex Dasar.pdf</td>
+              <td>Forex</td>
+              <td>15 Mar 2023</td>
+              <td><span class="badge badge-success">Publik</span></td>
+              <td>1,842</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Analisis Teknikal Lengkap.pdf</td>
+              <td>Analisis</td>
+              <td>10 Mar 2023</td>
+              <td><span class="badge badge-success">Publik</span></td>
+              <td>2,451</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Strategi Trading Harian.pdf</td>
+              <td>Trading</td>
+              <td>05 Mar 2023</td>
+              <td><span class="badge badge-warning">Draft</span></td>
+              <td>0</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td><i class="fas fa-file-pdf" style="color: #ff6b6b; margin-right: 8px;"></i> Manajemen Risiko Forex.pdf</td>
+              <td>Manajemen</td>
+              <td>28 Feb 2023</td>
+              <td><span class="badge badge-success">Publik</span></td>
+              <td>1,125</td>
+              <td>
+                <div class="action-buttons">
+                  <button class="action-btn edit-btn"><i class="fas fa-edit"></i></button>
+                  <button class="action-btn delete-btn"><i class="fas fa-trash"></i></button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="content-section">
+      <div class="section-header">
+        <h2><i class="fas fa-history" style="margin-right: 10px; color: #4facfe;"></i> Aktivitas Terkini</h2>
+      </div>
+      
+      <div style="display: flex; flex-direction: column; gap: 15px;">
+        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+          <div style="width: 40px; height: 40px; background: rgba(79, 172, 254, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #4facfe;">
+            <i class="fas fa-upload"></i>
+          </div>
+          <div>
+            <div style="font-weight: 600;">Dokumen baru diunggah</div>
+            <div style="font-size: 14px; color: #666;">"Panduan Indikator Forex" diunggah oleh Admin • 2 jam yang lalu</div>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+          <div style="width: 40px; height: 40px; background: rgba(106, 176, 76, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #6ab04c;">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <div>
+            <div style="font-weight: 600;">Pengguna baru terdaftar</div>
+            <div style="font-size: 14px; color: #666;">25 pengguna baru hari ini • Total: 1,248 pengguna</div>
+          </div>
+        </div>
+        
+        <div style="display: flex; align-items: center; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+          <div style="width: 40px; height: 40px; background: rgba(245, 203, 92, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 15px; color: #f5cb5c;">
+            <i class="fas fa-cog"></i>
+          </div>
+          <div>
+            <div style="font-weight: 600;">Pengaturan diperbarui</div>
+            <div style="font-size: 14px; color: #666;">Konfigurasi keamanan diperbarui • 5 jam yang lalu</div>
+          </div>
         </div>
       </div>
-
-    </div>
-  </section>
-
-</main>
-
-<footer class="main-footer">
-  <div class="footer-grid container">
-    <div class="footer-col">
-      <h3>Admin Panel</h3>
-      <p class="footer-desc">Area khusus admin untuk monitoring daftar dokumen.</p>
-    </div>
-
-    <div class="footer-col">
-      <h4>Shortcut</h4>
-      <ul class="footer-links">
-        <li><a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a></li>
-        <li><a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public Site</a></li>
-      </ul>
-    </div>
-
-    <div class="footer-col">
-      <h4>Keamanan</h4>
-      <ul class="footer-links">
-        <li><a href="javascript:void(0)"><i class="fa-solid fa-lock"></i> Akses Terkontrol</a></li>
-      </ul>
-      <p class="footer-small">Pastikan logout setelah selesai.</p>
     </div>
   </div>
 
-  <div class="footer-bottom">
-    <p>© <span id="year"></span> Dokumentasi PDF FX. Admin Area.</p>
-  </div>
-</footer>
-
-<script>
-  // year footer
-  document.getElementById("year").textContent = new Date().getFullYear();
-
-  // ✅ Guard admin
-  if (localStorage.getItem("isAdmin") !== "true") {
-    window.location.href = "login.html";
-  }
-
-  // ✅ Logout
-  function doLogout() {
-    localStorage.removeItem("isAdmin");
-    window.location.href = "index.html";
-  }
-
-  document.getElementById("logoutBtn")?.addEventListener("click", doLogout);
-  document.getElementById("logoutBtnMobile")?.addEventListener("click", doLogout);
-
-  // ✅ Mobile navbar toggle
-  const menuBtn = document.getElementById("menuBtn");
-  const mobileNav = document.getElementById("mobileNav");
-
-  if (menuBtn && mobileNav) {
-    menuBtn.addEventListener("click", () => {
-      mobileNav.classList.toggle("show");
-      menuBtn.classList.toggle("active");
-      menuBtn.innerHTML = mobileNav.classList.contains("show")
-        ? '<i class="fa-solid fa-xmark"></i>'
-        : '<i class="fa-solid fa-bars"></i>';
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Toggle menu untuk mobile
+      const menuToggle = document.getElementById('menuToggle');
+      const sidebar = document.getElementById('sidebar');
+      
+      if (menuToggle) {
+        menuToggle.addEventListener('click', function() {
+          sidebar.classList.toggle('active');
+        });
+      }
+      
+      // Logout konfirmasi
+      const logoutBtn = document.querySelector('.logout-btn');
+      if (logoutBtn) {
+        logoutBtn.addEventListener('click', function(e) {
+          if (!confirm('Apakah Anda yakin ingin keluar dari admin panel?')) {
+            e.preventDefault();
+          }
+        });
+      }
+      
+      // Simulasi data real-time
+      setInterval(function() {
+        // Update waktu "x jam yang lalu"
+        const timeElements = document.querySelectorAll('.content-section .fa-history ~ div');
+        // Di sini bisa diisi dengan logika update waktu real
+      }, 60000);
     });
-
-    // close when click link
-    mobileNav.querySelectorAll("a").forEach(a => {
-      a.addEventListener("click", () => {
-        mobileNav.classList.remove("show");
-        menuBtn.classList.remove("active");
-        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
-      });
-    });
-  }
-
-  // ✅ Scroll reveal
-  const reveals = document.querySelectorAll(".reveal");
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add("show");
-    });
-  }, { threshold: 0.15 });
-  reveals.forEach(el => obs.observe(el));
-</script>
-
-<!-- ✅ Pakai script.js kamu yang sudah ada -->
-<script src="script.js"></script>
-
+  </script>
 </body>
 </html>
