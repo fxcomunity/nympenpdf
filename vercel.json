@@ -5,9 +5,11 @@
   },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
+
     { "source": "/", "destination": "/index.html" },
     { "source": "/admin", "destination": "/admin.html" },
     { "source": "/login", "destination": "/login.html" },
+
     { "source": "/(.*)", "destination": "/$1" }
   ]
 }
