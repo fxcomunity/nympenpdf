@@ -15,21 +15,6 @@ function setAdminKey(key) {
 }
 
 // =====================================================
-// TRACK VIEW / DOWNLOAD (PUBLIC)
-// =====================================================
-async function trackAction(id, type) {
-  try {
-    await fetch("/api/track", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, type }),
-    });
-  } catch (err) {
-    console.error("Track error:", err);
-  }
-}
-
-// =====================================================
 // DRIVE HELPERS
 // =====================================================
 function extractDriveId(url) {
@@ -56,7 +41,13 @@ async function loadDocsFromDB() {
     const data = await res.json();
 
     // convert DB rows => format array lama
-    pdfList = data.map((d) => [d.title, d.url, d.id, d.views || 0, d.downloads || 0]);
+    pdfList = data.map((d) => [
+      d.title,
+      d.url,
+      d.id,
+      d.views || 0,
+      d.downloads || 0,
+    ]);
 
     // Total views / downloads dari DB
     const totalViews = data.reduce((sum, d) => sum + (d.views || 0), 0);
@@ -74,15 +65,15 @@ async function loadDocsFromDB() {
     initPublicSearch();
     initAdminSearch();
     initContactForm();
-    initAdminKeyPrompt(); // ✅ admin key input (admin page only)
-    initAdminAddDoc(); // ✅ add doc (admin page only)
+    initAdminKeyPrompt();
+    initAdminAddDoc();
   } catch (err) {
     console.error("Gagal load data dari Neon:", err);
   }
 }
 
 // =====================================================
-// RENDER PUBLIC
+// RENDER PUBLIC (VIEWER TRACKING)
 // =====================================================
 function renderPublic(list) {
   const publicContainer = document.getElementById("public-files-container");
@@ -113,27 +104,15 @@ function renderPublic(list) {
       </div>
 
       <div class="pdf-actions">
-        <a class="btn-preview" href="${drivePreview(url)}" target="_blank">
+        <a class="btn-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
 
-        <a class="btn-download" href="${driveDownload(url)}" download>
+        <a class="btn-download" href="viewer.html?id=${id}&type=download" target="_blank">
           <i class="fas fa-download"></i> Download
         </a>
       </div>
     `;
-
-    // ✅ Track view (preview)
-    card.querySelector(".btn-preview").addEventListener("click", () => {
-      trackAction(id, "view");
-      setTimeout(loadDocsFromDB, 500); // refresh stats
-    });
-
-    // ✅ Track download
-    card.querySelector(".btn-download").addEventListener("click", () => {
-      trackAction(id, "download");
-      setTimeout(loadDocsFromDB, 500); // refresh stats
-    });
 
     publicContainer.appendChild(card);
   });
@@ -142,7 +121,7 @@ function renderPublic(list) {
 }
 
 // =====================================================
-// RENDER ADMIN + DELETE BUTTON
+// RENDER ADMIN + DELETE BUTTON (VIEWER TRACKING)
 // =====================================================
 function renderAdmin(list) {
   const adminGrid = document.getElementById("admin-files-grid");
@@ -155,7 +134,7 @@ function renderAdmin(list) {
     return;
   }
 
-  list.forEach(([title, url, id]) => {
+  list.forEach(([title, url, id, views, downloads]) => {
     const card = document.createElement("div");
     card.className = "pdf-card admin-pdf-card";
 
@@ -166,16 +145,18 @@ function renderAdmin(list) {
         </div>
         <div class="pdf-info">
           <h4 class="pdf-title">${title}</h4>
-          <p class="pdf-subtitle">Admin Panel • PDF File</p>
+          <p class="pdf-subtitle">
+            Views: <b>${views}</b> • Downloads: <b>${downloads}</b>
+          </p>
         </div>
       </div>
 
       <div class="pdf-actions">
-        <a class="btn-preview admin-preview" href="${drivePreview(url)}" target="_blank">
+        <a class="btn-preview admin-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
 
-        <a class="btn-download admin-download" href="${driveDownload(url)}" download>
+        <a class="btn-download admin-download" href="viewer.html?id=${id}&type=download" target="_blank">
           <i class="fas fa-download"></i> Download
         </a>
 
@@ -213,17 +194,6 @@ function renderAdmin(list) {
       loadDocsFromDB();
     });
 
-    // ✅ Track view & download in admin too
-    card.querySelector(".admin-preview").addEventListener("click", () => {
-      trackAction(id, "view");
-      setTimeout(loadDocsFromDB, 500);
-    });
-
-    card.querySelector(".admin-download").addEventListener("click", () => {
-      trackAction(id, "download");
-      setTimeout(loadDocsFromDB, 500);
-    });
-
     adminGrid.appendChild(card);
   });
 
@@ -241,7 +211,6 @@ function initPublicSearch() {
   const searchInput = document.getElementById("searchInput");
   const searchBtn = document.getElementById("searchBtn");
   const clearSearch = document.getElementById("clearSearch");
-
   if (!searchInput) return;
 
   function filterPublic() {
@@ -282,22 +251,18 @@ function initAdminSearch() {
 }
 
 // =====================================================
-// ADMIN KEY INPUT (BUTUH INPUT DI admin.html)
+// ADMIN KEY INPUT
 // =====================================================
 function initAdminKeyPrompt() {
   const input = document.getElementById("adminKeyInput");
   const saveBtn = document.getElementById("saveAdminKeyBtn");
-
   if (!input || !saveBtn) return;
 
   input.value = getAdminKey();
 
   saveBtn.addEventListener("click", () => {
     const key = input.value.trim();
-    if (!key) {
-      alert("ADMIN KEY tidak boleh kosong!");
-      return;
-    }
+    if (!key) return alert("ADMIN KEY tidak boleh kosong!");
     setAdminKey(key);
     alert("✅ ADMIN KEY tersimpan!");
   });
@@ -318,15 +283,8 @@ function initAdminAddDoc() {
     const url = urlInput?.value.trim();
     const adminKey = getAdminKey();
 
-    if (!adminKey) {
-      alert("⚠️ Masukkan ADMIN KEY dulu!");
-      return;
-    }
-
-    if (!title || !url) {
-      alert("Judul dan URL wajib diisi!");
-      return;
-    }
+    if (!adminKey) return alert("⚠️ Masukkan ADMIN KEY dulu!");
+    if (!title || !url) return alert("Judul dan URL wajib diisi!");
 
     const response = await fetch("/api/add-doc", {
       method: "POST",
@@ -338,11 +296,7 @@ function initAdminAddDoc() {
     });
 
     const result = await response.json();
-
-    if (result.error) {
-      alert("❌ " + result.error);
-      return;
-    }
+    if (result.error) return alert("❌ " + result.error);
 
     if (result.duplicated) {
       alert("⚠️ Dokumen sudah ada (URL duplikat).");
@@ -352,7 +306,6 @@ function initAdminAddDoc() {
 
     titleInput.value = "";
     urlInput.value = "";
-
     loadDocsFromDB();
   });
 }
@@ -370,16 +323,17 @@ function initContactForm() {
     const email = document.getElementById("contact-email").value;
     const msg = document.getElementById("contact-message").value;
 
-    const text =
-      `Halo Admin, saya ${name}%0AEmail: ${email}%0A%0APesan:%0A${msg}`;
-
+    const text = `Halo Admin, saya ${name}%0AEmail: ${email}%0A%0APesan:%0A${msg}`;
     window.open(`https://wa.me/62895404147521?text=${text}`, "_blank");
   });
 }
 
 // =====================================================
-// INIT ✅
+// INIT ✅ + POLLING REALTIME (OPSIONAL)
 // =====================================================
 document.addEventListener("DOMContentLoaded", () => {
   loadDocsFromDB();
+
+  // ✅ realtime update tiap 3 detik (bisa kamu matiin kalau berat)
+  setInterval(loadDocsFromDB, 3000);
 });
