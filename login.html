@@ -5,59 +5,436 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Login Admin | Dokumentasi PDF FX</title>
 
-  <!-- ✅ FAVICON (TIDAK DIUBAH) -->
+  <!-- ✅ FAVICON -->
   <link rel="icon" type="image/png"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
 
-  <link rel="stylesheet" href="style.css?v=9999" />
+  <!-- ✅ STYLESHEET -->
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1a2a3a 0%, #0d1520 100%);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #fff;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 40px 35px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .login-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 35px;
+    }
+
+    .login-logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 32px;
+      color: white;
+      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
+    }
+
+    .login-header h2 {
+      font-size: 26px;
+      margin-bottom: 8px;
+      background: linear-gradient(to right, #4facfe, #00f2fe);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .login-header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .login-form {
+      margin-bottom: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+      position: relative;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+      font-size: 15px;
+    }
+
+    .input-group {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 18px;
+      color: #4facfe;
+      font-size: 18px;
+      z-index: 1;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 16px 20px 16px 50px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      color: white;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #4facfe;
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.2);
+    }
+
+    .input-group input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .show-password {
+      position: absolute;
+      right: 15px;
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      font-size: 18px;
+      transition: color 0.3s;
+    }
+
+    .show-password:hover {
+      color: #4facfe;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 16px;
+      background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-size: 17px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.4);
+    }
+
+    .login-btn:active {
+      transform: translateY(0);
+    }
+
+    .login-btn i {
+      font-size: 18px;
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 25px;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .security-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .security-note i {
+      color: #00f2fe;
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #4facfe;
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.3s;
+      padding: 10px 20px;
+      border-radius: 8px;
+      background: rgba(79, 172, 254, 0.1);
+    }
+
+    .back-link:hover {
+      background: rgba(79, 172, 254, 0.2);
+      transform: translateX(-5px);
+    }
+
+    .error-message {
+      color: #ff6b6b;
+      font-size: 14px;
+      margin-top: 5px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .error-message i {
+      font-size: 14px;
+    }
+
+    /* Animasi loading */
+    .loader {
+      display: none;
+      width: 20px;
+      height: 20px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Responsif */
+    @media (max-width: 480px) {
+      .login-card {
+        padding: 30px 25px;
+      }
+      
+      .login-header h2 {
+        font-size: 22px;
+      }
+    }
+  </style>
+
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 </head>
 
-<body class="login-theme">
-
-  <div class="login-wrap">
+<body>
+  <div class="login-container">
     <div class="login-card">
-
       <div class="login-header">
         <div class="login-logo">
           <i class="fas fa-user-shield"></i>
         </div>
-
-        <div>
-          <h2>Login Admin</h2>
-          <p>Masukkan akun admin untuk mengelola dokumen.</p>
-        </div>
+        
+        <h2>Login Administrator</h2>
+        <p>Panel akses eksklusif untuk mengelola dokumentasi PDF FX</p>
       </div>
 
-      <form class="login-form">
-        <label>Username</label>
-        <div class="input-box">
-          <i class="fas fa-user"></i>
-          <input type="text" placeholder="Masukkan username" required>
+      <form class="login-form" id="loginForm">
+        <div class="form-group">
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <div class="input-group">
+            <i class="fas fa-user"></i>
+            <input type="text" id="username" placeholder="Masukkan username admin" required>
+          </div>
+          <div class="error-message" id="usernameError">
+            <i class="fas fa-exclamation-circle"></i> Username tidak valid
+          </div>
         </div>
 
-        <label>Password</label>
-        <div class="input-box">
-          <i class="fas fa-lock"></i>
-          <input type="password" placeholder="Masukkan password" required>
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <div class="input-group">
+            <i class="fas fa-lock"></i>
+            <input type="password" id="password" placeholder="Masukkan password" required>
+            <button type="button" class="show-password" id="togglePassword">
+              <i class="far fa-eye"></i>
+            </button>
+          </div>
+          <div class="error-message" id="passwordError">
+            <i class="fas fa-exclamation-circle"></i> Password salah
+          </div>
         </div>
 
-        <button type="submit" class="login-btn">
-          <i class="fas fa-arrow-right-to-bracket"></i> Login
+        <button type="submit" class="login-btn" id="loginButton">
+          <i class="fas fa-arrow-right-to-bracket"></i> 
+          <span>Masuk ke Dashboard</span>
+          <div class="loader" id="loader"></div>
         </button>
       </form>
 
-      <p class="login-note">
-        <i class="fas fa-shield-halved"></i>
-        Halaman ini hanya untuk admin resmi.
-      </p>
-
-      <a href="index.html" class="login-back">
-        <i class="fas fa-arrow-left"></i> Kembali ke Beranda
-      </a>
-
+      <div class="login-footer">
+        <div class="security-note">
+          <i class="fas fa-shield-halved"></i>
+          <span>Akses terbatas untuk admin resmi saja</span>
+        </div>
+        
+        <a href="index.html" class="back-link">
+          <i class="fas fa-arrow-left"></i> Kembali ke Beranda
+        </a>
+      </div>
     </div>
   </div>
 
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Elemen DOM
+      const loginForm = document.getElementById('loginForm');
+      const usernameInput = document.getElementById('username');
+      const passwordInput = document.getElementById('password');
+      const togglePassword = document.getElementById('togglePassword');
+      const loginButton = document.getElementById('loginButton');
+      const usernameError = document.getElementById('usernameError');
+      const passwordError = document.getElementById('passwordError');
+      const loader = document.getElementById('loader');
+      const loginText = loginButton.querySelector('span');
+      
+      // Kredensial admin (dalam aplikasi nyata ini harus dari server)
+      const adminCredentials = {
+        username: 'admin',
+        password: 'admin123'
+      };
+      
+      // Toggle show/hide password
+      togglePassword.addEventListener('click', function() {
+        const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+        passwordInput.setAttribute('type', type);
+        this.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
+      });
+      
+      // Validasi form
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Reset error messages
+        usernameError.style.display = 'none';
+        passwordError.style.display = 'none';
+        
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
+        
+        // Validasi sederhana
+        let isValid = true;
+        
+        if (username === '') {
+          usernameError.textContent = 'Username harus diisi';
+          usernameError.style.display = 'flex';
+          isValid = false;
+        }
+        
+        if (password === '') {
+          passwordError.textContent = 'Password harus diisi';
+          passwordError.style.display = 'flex';
+          isValid = false;
+        }
+        
+        if (!isValid) return;
+        
+        // Tampilkan loading
+        loginText.style.display = 'none';
+        loader.style.display = 'block';
+        loginButton.disabled = true;
+        
+        // Simulasi proses login (dalam aplikasi nyata ini akan request ke server)
+        setTimeout(function() {
+          // Cek kredensial
+          if (username === adminCredentials.username && password === adminCredentials.password) {
+            // Login berhasil, arahkan ke admin.html
+            window.location.href = 'admin.html';
+          } else {
+            // Login gagal
+            usernameError.textContent = 'Username atau password salah';
+            usernameError.style.display = 'flex';
+            passwordError.style.display = 'flex';
+            
+            // Tambahkan efek shake
+            loginForm.classList.add('shake');
+            setTimeout(() => loginForm.classList.remove('shake'), 500);
+            
+            // Reset button
+            loginText.style.display = 'inline';
+            loader.style.display = 'none';
+            loginButton.disabled = false;
+          }
+        }, 1500); // Delay simulasi
+      });
+      
+      // Hapus error saat user mulai mengetik
+      usernameInput.addEventListener('input', function() {
+        usernameError.style.display = 'none';
+      });
+      
+      passwordInput.addEventListener('input', function() {
+        passwordError.style.display = 'none';
+      });
+      
+      // Tambahkan style untuk efek shake
+      const style = document.createElement('style');
+      style.textContent = `
+        .shake {
+          animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+          0%, 100% { transform: translateX(0); }
+          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+          20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+      `;
+      document.head.appendChild(style);
+    });
+  </script>
 </body>
 </html>
