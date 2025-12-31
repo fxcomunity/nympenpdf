@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Dokumentasi PDF FX</title>
+
+  <link rel="icon" type="image/png"
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
+
+  <link rel="stylesheet" href="style.css?v=9999" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+
+<body class="admin-theme">
+
+<!-- ✅ HEADER ADMIN -->
+<header class="admin-header">
+  <nav class="nav-container">
+
+    <a class="logo" href="admin.html" aria-label="Admin Panel">
+      <span style="display:inline-flex;align-items:center;gap:10px;">
+        <i class="fa-solid fa-gauge-high" style="color: var(--primary); font-size:18px;"></i>
+        <span>Admin Panel</span>
+      </span>
+    </a>
+
+    <!-- Desktop links -->
+    <ul class="nav-links desktop-nav">
+      <li><a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public</a></li>
+      <li><a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a></li>
+      <li><a href="#info"><i class="fa-solid fa-circle-info"></i> Info</a></li>
+      <li>
+        <button id="logoutBtn" class="logout-btn" type="button">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </li>
+    </ul>
+
+    <!-- ✅ Mobile menu button -->
+    <button class="mobile-menu-btn" id="menuBtn" type="button" aria-label="Menu">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </nav>
+
+  <!-- ✅ Mobile nav panel -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public</a>
+    <a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a>
+    <a href="#info"><i class="fa-solid fa-circle-info"></i> Info</a>
+    <a href="javascript:void(0)" id="logoutBtnMobile" class="mobile-login">
+      <i class="fa-solid fa-right-from-bracket"></i> Logout
+    </a>
+  </div>
+</header>
+
+<main>
+
+  <!-- ✅ HERO ADMIN -->
+  <section class="hero" style="min-height:auto; padding:90px 0 40px;">
+    <div class="container hero-content">
+      <div class="hero-badge reveal">
+        <i class="fa-solid fa-shield"></i>
+        <span>Mode Admin • Akses Internal</span>
+      </div>
+
+      <h1 class="hero-title reveal">
+        <span class="gradient-text">Kelola Dokumen</span><br />
+        Panel Admin PDF
+      </h1>
+
+      <p class="hero-description reveal" style="max-width:760px;">
+        Cari PDF dengan cepat, cek jumlah dokumen, dan akses download/preview seperti di public
+        tapi dengan tema admin yang berbeda.
+      </p>
+
+      <div class="hero-stats reveal" id="info">
+        <div class="stat-item">
+          <div class="stat-number" id="total-files">0</div>
+          <div class="stat-label">Total Dokumen</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number" id="last-update">-</div>
+          <div class="stat-label">Terakhir Update</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">Admin</div>
+          <div class="stat-label">Akses Khusus</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ FILES -->
+  <section id="files" style="padding-top:40px;">
+    <div class="container">
+      <h2 class="section-title reveal">Dokumen Admin</h2>
+      <p class="section-subtitle reveal">Cari cepat dan akses PDF dari panel admin.</p>
+
+      <!-- ✅ ADMIN SEARCH (full width) -->
+      <div class="search-wrapper reveal">
+        <div class="search-input-box">
+          <i class="fas fa-search search-icon"></i>
+          <input type="text" id="admin-search" placeholder="Cari dokumen di admin..." autocomplete="off" />
+        </div>
+        <button class="search-btn" type="button" aria-label="Cari">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- ✅ GRID -->
+      <div class="documents-grid reveal" id="admin-files-grid">
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Memuat dokumen admin...</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="main-footer">
+  <div class="footer-grid container">
+    <div class="footer-col">
+      <h3>Admin Panel</h3>
+      <p class="footer-desc">Area khusus admin untuk monitoring daftar dokumen.</p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Shortcut</h4>
+      <ul class="footer-links">
+        <li><a href="#files"><i class="fa-solid fa-folder-open"></i> Dokumen</a></li>
+        <li><a href="index.html" target="_blank"><i class="fa-solid fa-globe"></i> Public Site</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Keamanan</h4>
+      <ul class="footer-links">
+        <li><a href="javascript:void(0)"><i class="fa-solid fa-lock"></i> Akses Terkontrol</a></li>
+      </ul>
+      <p class="footer-small">Pastikan logout setelah selesai.</p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© <span id="year"></span> Dokumentasi PDF FX. Admin Area.</p>
+  </div>
+</footer>
+
+<script>
+  // year footer
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  // ✅ Guard admin
+  if (localStorage.getItem("isAdmin") !== "true") {
+    window.location.href = "login.html";
+  }
+
+  // ✅ Logout
+  function doLogout() {
+    localStorage.removeItem("isAdmin");
+    window.location.href = "index.html";
+  }
+
+  document.getElementById("logoutBtn")?.addEventListener("click", doLogout);
+  document.getElementById("logoutBtnMobile")?.addEventListener("click", doLogout);
+
+  // ✅ Mobile navbar toggle
+  const menuBtn = document.getElementById("menuBtn");
+  const mobileNav = document.getElementById("mobileNav");
+
+  if (menuBtn && mobileNav) {
+    menuBtn.addEventListener("click", () => {
+      mobileNav.classList.toggle("show");
+      menuBtn.classList.toggle("active");
+      menuBtn.innerHTML = mobileNav.classList.contains("show")
+        ? '<i class="fa-solid fa-xmark"></i>'
+        : '<i class="fa-solid fa-bars"></i>';
+    });
+
+    // close when click link
+    mobileNav.querySelectorAll("a").forEach(a => {
+      a.addEventListener("click", () => {
+        mobileNav.classList.remove("show");
+        menuBtn.classList.remove("active");
+        menuBtn.innerHTML = '<i class="fa-solid fa-bars"></i>';
+      });
+    });
+  }
+
+  // ✅ Scroll reveal
+  const reveals = document.querySelectorAll(".reveal");
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add("show");
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(el => obs.observe(el));
+</script>
+
+<!-- ✅ Pakai script.js kamu yang sudah ada -->
+<script src="script.js"></script>
+
+</body>
+</html>
