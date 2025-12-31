@@ -12,7 +12,6 @@
   <!-- ✅ FONT AWESOME -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
 
-  <!-- ✅ STYLESHEET -->
   <style>
     * {
       margin: 0;
@@ -197,16 +196,11 @@
     }
 
     .stat-card:nth-child(2) .stat-icon {
-      background: rgba(255, 107, 107, 0.1);
-      color: #ff6b6b;
-    }
-
-    .stat-card:nth-child(3) .stat-icon {
       background: rgba(106, 176, 76, 0.1);
       color: #6ab04c;
     }
 
-    .stat-card:nth-child(4) .stat-icon {
+    .stat-card:nth-child(3) .stat-icon {
       background: rgba(245, 203, 92, 0.1);
       color: #f5cb5c;
     }
@@ -426,10 +420,8 @@
     <ul class="nav-menu">
       <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
       <li><a href="#"><i class="fas fa-file-pdf"></i> Dokumen PDF</a></li>
-      <li><a href="#"><i class="fas fa-users"></i> Pengguna</a></li>
       <li><a href="#"><i class="fas fa-chart-bar"></i> Statistik</a></li>
       <li><a href="#"><i class="fas fa-cog"></i> Pengaturan</a></li>
-      <li><a href="#"><i class="fas fa-history"></i> Aktivitas</a></li>
     </ul>
 
     <a href="login.html" class="logout-btn">
@@ -446,7 +438,7 @@
         <h1>Dashboard Admin</h1>
         <p style="color: #666; margin-top: 5px;">Selamat datang kembali, Administrator</p>
       </div>
-      
+
       <div class="user-info">
         <div class="user-avatar">
           <i class="fas fa-user"></i>
@@ -470,28 +462,20 @@
         <h3 id="total-files">0</h3>
         <p>Total Dokumen PDF</p>
       </div>
-      
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-users"></i>
-        </div>
-        <h3>1,248</h3>
-        <p>Pengguna Terdaftar</p>
-      </div>
-      
+
       <div class="stat-card">
         <div class="stat-icon">
           <i class="fas fa-download"></i>
         </div>
-        <h3>3,841</h3>
+        <h3 id="total-downloads">0</h3>
         <p>Total Download</p>
       </div>
-      
+
       <div class="stat-card">
         <div class="stat-icon">
           <i class="fas fa-eye"></i>
         </div>
-        <h3>24,592</h3>
+        <h3 id="total-views">0</h3>
         <p>Total Dilihat</p>
       </div>
     </div>
