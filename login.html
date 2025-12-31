@@ -236,11 +236,6 @@
       gap: 5px;
     }
 
-    .error-message i {
-      font-size: 14px;
-    }
-
-    /* Animasi loading */
     .loader {
       display: none;
       width: 20px;
@@ -255,15 +250,15 @@
       to { transform: rotate(360deg); }
     }
 
-    /* Responsif */
-    @media (max-width: 480px) {
-      .login-card {
-        padding: 30px 25px;
-      }
-      
-      .login-header h2 {
-        font-size: 22px;
-      }
+    /* Shake effect */
+    .shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
     }
   </style>
 
@@ -277,7 +272,6 @@
         <div class="login-logo">
           <i class="fas fa-user-shield"></i>
         </div>
-        
         <h2>Login Administrator</h2>
         <p>Panel akses eksklusif untuk mengelola dokumentasi PDF FX</p>
       </div>
@@ -328,9 +322,10 @@
     </div>
   </div>
 
+  <!-- ✅ SCRIPT FIX LOGIN PAKAI API NEON -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
-      // Elemen DOM
+
       const loginForm = document.getElementById('loginForm');
       const usernameInput = document.getElementById('username');
       const passwordInput = document.getElementById('password');
@@ -340,101 +335,73 @@
       const passwordError = document.getElementById('passwordError');
       const loader = document.getElementById('loader');
       const loginText = loginButton.querySelector('span');
-      
-      // Kredensial admin (dalam aplikasi nyata ini harus dari server)
-      const adminCredentials = {
-        username: 'admin',
-        password: 'admin123'
-      };
-      
-      // Toggle show/hide password
+
+      // Toggle password
       togglePassword.addEventListener('click', function() {
         const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
         passwordInput.setAttribute('type', type);
         this.innerHTML = type === 'password' ? '<i class="far fa-eye"></i>' : '<i class="far fa-eye-slash"></i>';
       });
-      
-      // Validasi form
-      loginForm.addEventListener('submit', function(e) {
+
+      // LOGIN pakai API /api/login
+      loginForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
-        // Reset error messages
+
         usernameError.style.display = 'none';
         passwordError.style.display = 'none';
-        
+
         const username = usernameInput.value.trim();
-        const password = passwordInput.value;
-        
-        // Validasi sederhana
-        let isValid = true;
-        
-        if (username === '') {
-          usernameError.textContent = 'Username harus diisi';
-          usernameError.style.display = 'flex';
-          isValid = false;
+        const password = passwordInput.value.trim();
+
+        if (!username || !password) {
+          usernameError.textContent = "Username dan password wajib diisi!";
+          usernameError.style.display = "flex";
+          passwordError.style.display = "flex";
+          return;
         }
-        
-        if (password === '') {
-          passwordError.textContent = 'Password harus diisi';
-          passwordError.style.display = 'flex';
-          isValid = false;
-        }
-        
-        if (!isValid) return;
-        
-        // Tampilkan loading
+
+        // loading
         loginText.style.display = 'none';
         loader.style.display = 'block';
         loginButton.disabled = true;
-        
-        // Simulasi proses login (dalam aplikasi nyata ini akan request ke server)
-        setTimeout(function() {
-          // Cek kredensial
-          if (username === adminCredentials.username && password === adminCredentials.password) {
-            // Login berhasil, arahkan ke admin.html
-            window.location.href = 'admin.html';
+
+        try {
+          const res = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            alert("✅ Login berhasil!");
+            window.location.href = "admin.html";
           } else {
-            // Login gagal
-            usernameError.textContent = 'Username atau password salah';
-            usernameError.style.display = 'flex';
-            passwordError.style.display = 'flex';
-            
-            // Tambahkan efek shake
-            loginForm.classList.add('shake');
-            setTimeout(() => loginForm.classList.remove('shake'), 500);
-            
-            // Reset button
-            loginText.style.display = 'inline';
-            loader.style.display = 'none';
-            loginButton.disabled = false;
+            usernameError.textContent = data.error || "Login gagal";
+            usernameError.style.display = "flex";
+            passwordError.style.display = "flex";
+            loginForm.classList.add("shake");
+            setTimeout(() => loginForm.classList.remove("shake"), 500);
           }
-        }, 1500); // Delay simulasi
-      });
-      
-      // Hapus error saat user mulai mengetik
-      usernameInput.addEventListener('input', function() {
-        usernameError.style.display = 'none';
-      });
-      
-      passwordInput.addEventListener('input', function() {
-        passwordError.style.display = 'none';
-      });
-      
-      // Tambahkan style untuk efek shake
-      const style = document.createElement('style');
-      style.textContent = `
-        .shake {
-          animation: shake 0.5s ease-in-out;
+
+        } catch (err) {
+          usernameError.textContent = "Server error / API tidak ditemukan!";
+          usernameError.style.display = "flex";
+          passwordError.style.display = "flex";
         }
-        
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-          20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-      `;
-      document.head.appendChild(style);
+
+        // reset button
+        loginText.style.display = 'inline';
+        loader.style.display = 'none';
+        loginButton.disabled = false;
+      });
+
+      // hilangin error saat mengetik
+      usernameInput.addEventListener('input', () => usernameError.style.display = 'none');
+      passwordInput.addEventListener('input', () => passwordError.style.display = 'none');
     });
   </script>
+
 </body>
 </html>
