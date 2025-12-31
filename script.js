@@ -4,6 +4,17 @@
 let pdfList = []; // format: [title, url, id]
 
 // =====================================================
+// ADMIN KEY (PRIVATE) - disimpan di localStorage
+// =====================================================
+function getAdminKey() {
+  return localStorage.getItem("ADMIN_KEY") || "";
+}
+
+function setAdminKey(key) {
+  localStorage.setItem("ADMIN_KEY", key);
+}
+
+// =====================================================
 // DRIVE HELPERS
 // =====================================================
 function extractDriveId(url) {
@@ -37,7 +48,8 @@ async function loadDocsFromDB() {
     initPublicSearch();
     initAdminSearch();
     initContactForm();
-    initAdminAddDoc();
+    initAdminKeyPrompt(); // ✅ admin key input (admin page only)
+    initAdminAddDoc(); // ✅ add doc (admin page only)
   } catch (err) {
     console.error("Gagal load data dari Neon:", err);
   }
@@ -139,11 +151,26 @@ function renderAdmin(list) {
     card.querySelector(".btn-delete").addEventListener("click", async () => {
       if (!confirm("Yakin mau hapus dokumen ini?")) return;
 
-      await fetch("/api/delete-doc", {
+      const adminKey = getAdminKey();
+      if (!adminKey) {
+        alert("⚠️ Masukkan ADMIN KEY dulu!");
+        return;
+      }
+
+      const response = await fetch("/api/delete-doc", {
         method: "DELETE",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          "x-admin-key": adminKey,
+        },
         body: JSON.stringify({ id }),
       });
+
+      const result = await response.json();
+      if (result.error) {
+        alert("❌ " + result.error);
+        return;
+      }
 
       loadDocsFromDB();
     });
@@ -206,6 +233,29 @@ function initAdminSearch() {
 }
 
 // =====================================================
+// ADMIN KEY INPUT (BUTUH INPUT DI admin.html)
+// =====================================================
+function initAdminKeyPrompt() {
+  const input = document.getElementById("adminKeyInput");
+  const saveBtn = document.getElementById("saveAdminKeyBtn");
+
+  if (!input || !saveBtn) return; // berarti bukan di admin page
+
+  // isi otomatis key yang pernah disimpan
+  input.value = getAdminKey();
+
+  saveBtn.addEventListener("click", () => {
+    const key = input.value.trim();
+    if (!key) {
+      alert("ADMIN KEY tidak boleh kosong!");
+      return;
+    }
+    setAdminKey(key);
+    alert("✅ ADMIN KEY tersimpan!");
+  });
+}
+
+// =====================================================
 // ADMIN ADD DOC (BUTUH INPUT DI admin.html)
 // =====================================================
 function initAdminAddDoc() {
@@ -218,17 +268,39 @@ function initAdminAddDoc() {
 
     const title = titleInput?.value.trim();
     const url = urlInput?.value.trim();
+    const adminKey = getAdminKey();
+
+    if (!adminKey) {
+      alert("⚠️ Masukkan ADMIN KEY dulu!");
+      return;
+    }
 
     if (!title || !url) {
       alert("Judul dan URL wajib diisi!");
       return;
     }
 
-    await fetch("/api/add-doc", {
+    const response = await fetch("/api/add-doc", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-key": adminKey,
+      },
       body: JSON.stringify({ title, url }),
     });
+
+    const result = await response.json();
+
+    if (result.error) {
+      alert("❌ " + result.error);
+      return;
+    }
+
+    if (result.duplicated) {
+      alert("⚠️ Dokumen sudah ada (URL duplikat).");
+    } else {
+      alert("✅ Dokumen berhasil ditambahkan!");
+    }
 
     titleInput.value = "";
     urlInput.value = "";
@@ -259,10 +331,6 @@ function initContactForm() {
 
 // =====================================================
 // INIT ✅
-/*
-  Data otomatis diambil dari Neon DB melalui API:
-  GET /api/docs
-*/
 // =====================================================
 document.addEventListener("DOMContentLoaded", () => {
   loadDocsFromDB();
