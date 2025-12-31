@@ -5,8 +5,13 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  const { id } = req.body || {};
+  // ✅ cek secret key dari header
+  const key = req.headers["x-admin-key"];
+  if (!key || key !== process.env.ADMIN_KEY) {
+    return res.status(401).json({ error: "Unauthorized" });
+  }
 
+  const { id } = req.body || {};
   if (!id) {
     return res.status(400).json({ error: "id wajib" });
   }
