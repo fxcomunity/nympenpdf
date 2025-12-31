@@ -5,7 +5,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Method not allowed" });
   }
 
-  // ✅ cek secret key dari header
+  // ✅ PRIVATE CHECK
   const key = req.headers["x-admin-key"];
   if (!key || key !== process.env.ADMIN_KEY) {
     return res.status(401).json({ error: "Unauthorized" });
