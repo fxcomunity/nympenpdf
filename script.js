@@ -1,7 +1,7 @@
 // =====================================================
 // PDF LIST (DARI DATABASE NEON)
 // =====================================================
-let pdfList = []; // format: [title, url, id]
+let pdfList = []; // format: [title, url, id, views, downloads]
 
 // =====================================================
 // ADMIN KEY (PRIVATE) - disimpan di localStorage
@@ -12,6 +12,21 @@ function getAdminKey() {
 
 function setAdminKey(key) {
   localStorage.setItem("ADMIN_KEY", key);
+}
+
+// =====================================================
+// TRACK VIEW / DOWNLOAD (PUBLIC)
+// =====================================================
+async function trackAction(id, type) {
+  try {
+    await fetch("/api/track", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, type }),
+    });
+  } catch (err) {
+    console.error("Track error:", err);
+  }
 }
 
 // =====================================================
@@ -41,10 +56,21 @@ async function loadDocsFromDB() {
     const data = await res.json();
 
     // convert DB rows => format array lama
-    pdfList = data.map((d) => [d.title, d.url, d.id]);
+    pdfList = data.map((d) => [d.title, d.url, d.id, d.views || 0, d.downloads || 0]);
+
+    // Total views / downloads dari DB
+    const totalViews = data.reduce((sum, d) => sum + (d.views || 0), 0);
+    const totalDownloads = data.reduce((sum, d) => sum + (d.downloads || 0), 0);
+
+    const viewsEl = document.getElementById("total-views");
+    if (viewsEl) viewsEl.textContent = totalViews.toLocaleString("id-ID");
+
+    const downloadsEl = document.getElementById("total-downloads");
+    if (downloadsEl) downloadsEl.textContent = totalDownloads.toLocaleString("id-ID");
 
     renderPublic(pdfList);
     renderAdmin(pdfList);
+
     initPublicSearch();
     initAdminSearch();
     initContactForm();
@@ -71,7 +97,7 @@ function renderPublic(list) {
     return;
   }
 
-  list.forEach(([title, url]) => {
+  list.forEach(([title, url, id]) => {
     const card = document.createElement("div");
     card.className = "pdf-card";
 
@@ -96,6 +122,18 @@ function renderPublic(list) {
         </a>
       </div>
     `;
+
+    // ✅ Track view (preview)
+    card.querySelector(".btn-preview").addEventListener("click", () => {
+      trackAction(id, "view");
+      setTimeout(loadDocsFromDB, 500); // refresh stats
+    });
+
+    // ✅ Track download
+    card.querySelector(".btn-download").addEventListener("click", () => {
+      trackAction(id, "download");
+      setTimeout(loadDocsFromDB, 500); // refresh stats
+    });
 
     publicContainer.appendChild(card);
   });
@@ -147,7 +185,7 @@ function renderAdmin(list) {
       </div>
     `;
 
-    // delete handler
+    // delete handler (PRIVATE)
     card.querySelector(".btn-delete").addEventListener("click", async () => {
       if (!confirm("Yakin mau hapus dokumen ini?")) return;
 
@@ -173,6 +211,17 @@ function renderAdmin(list) {
       }
 
       loadDocsFromDB();
+    });
+
+    // ✅ Track view & download in admin too
+    card.querySelector(".admin-preview").addEventListener("click", () => {
+      trackAction(id, "view");
+      setTimeout(loadDocsFromDB, 500);
+    });
+
+    card.querySelector(".admin-download").addEventListener("click", () => {
+      trackAction(id, "download");
+      setTimeout(loadDocsFromDB, 500);
     });
 
     adminGrid.appendChild(card);
@@ -239,9 +288,8 @@ function initAdminKeyPrompt() {
   const input = document.getElementById("adminKeyInput");
   const saveBtn = document.getElementById("saveAdminKeyBtn");
 
-  if (!input || !saveBtn) return; // berarti bukan di admin page
+  if (!input || !saveBtn) return;
 
-  // isi otomatis key yang pernah disimpan
   input.value = getAdminKey();
 
   saveBtn.addEventListener("click", () => {
@@ -256,7 +304,7 @@ function initAdminKeyPrompt() {
 }
 
 // =====================================================
-// ADMIN ADD DOC (BUTUH INPUT DI admin.html)
+// ADMIN ADD DOC (PRIVATE)
 // =====================================================
 function initAdminAddDoc() {
   const addBtn = document.getElementById("addDocBtn");
