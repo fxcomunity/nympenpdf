@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Loading Dokumen...</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+      background: #f5f7fa;
+    }
+    .box {
+      text-align: center;
+      background: white;
+      padding: 30px 40px;
+      border-radius: 14px;
+      box-shadow: 0 4px 16px rgba(0,0,0,.08);
+    }
+    .loader {
+      width: 40px;
+      height: 40px;
+      border: 4px solid #ddd;
+      border-top: 4px solid #4facfe;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 15px;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+  <div class="box">
+    <div class="loader"></div>
+    <h3>Loading dokumen...</h3>
+    <p>Harap tunggu sebentar</p>
+  </div>
+
+  <script>
+    async function trackAndRedirect() {
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get("id");
+      const type = params.get("type");
+
+      if (!id || !type) {
+        document.body.innerHTML = "<h2>❌ ID atau type tidak ditemukan!</h2>";
+        return;
+      }
+
+      try {
+        // ✅ Ambil URL dokumen berdasarkan ID
+        const res = await fetch("/api/docs");
+        const docs = await res.json();
+        const doc = docs.find(d => d.id == id);
+
+        if (!doc) {
+          document.body.innerHTML = "<h2>❌ Dokumen tidak ditemukan!</h2>";
+          return;
+        }
+
+        // ✅ Track view/download
+        await fetch("/api/track", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ id, type })
+        });
+
+        // ✅ Convert ke Google Preview / Download
+        function extractDriveId(url) {
+          const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+          return match ? match[1] : null;
+        }
+
+        function drivePreview(url) {
+          const did = extractDriveId(url);
+          return did ? `https://drive.google.com/file/d/${did}/preview` : url;
+        }
+
+        function driveDownload(url) {
+          const did = extractDriveId(url);
+          return did ? `https://drive.google.com/uc?export=download&id=${did}` : url;
+        }
+
+        const redirectUrl = type === "view"
+          ? drivePreview(doc.url)
+          : driveDownload(doc.url);
+
+        // ✅ Redirect user
+        window.location.href = redirectUrl;
+
+      } catch (err) {
+        console.error(err);
+        document.body.innerHTML = "<h2>❌ Error: gagal redirect</h2>";
+      }
+    }
+
+    trackAndRedirect();
+  </script>
+</body>
+</html>
