@@ -5,6 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard Admin | Dokumentasi PDF FX</title>
 
+  <!-- ✅ PROTEKSI ADMIN PAGE -->
+  <script>
+    const key = localStorage.getItem("ADMIN_KEY");
+    if (!key) {
+      alert("⚠️ Akses ditolak! Harus login terlebih dahulu.");
+      window.location.href = "login.html";
+    }
+  </script>
+
   <!-- ✅ FAVICON -->
   <link rel="icon" type="image/png"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
@@ -72,9 +81,7 @@
       padding: 0 20px;
     }
 
-    .nav-menu li {
-      margin-bottom: 5px;
-    }
+    .nav-menu li { margin-bottom: 5px; }
 
     .nav-menu a {
       display: flex;
@@ -85,16 +92,12 @@
       padding: 14px 18px;
       border-radius: 10px;
       transition: all 0.3s;
+      cursor: pointer;
     }
 
     .nav-menu a:hover, .nav-menu a.active {
       background: rgba(79, 172, 254, 0.15);
       color: white;
-    }
-
-    .nav-menu a i {
-      width: 20px;
-      text-align: center;
     }
 
     .logout-btn {
@@ -111,10 +114,6 @@
       border-radius: 10px;
       background: rgba(255, 107, 107, 0.1);
       transition: all 0.3s;
-    }
-
-    .logout-btn:hover {
-      background: rgba(255, 107, 107, 0.2);
     }
 
     /* Main Content */
@@ -172,37 +171,6 @@
       border-radius: 15px;
       padding: 25px;
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-      transition: transform 0.3s;
-    }
-
-    .stat-card:hover {
-      transform: translateY(-5px);
-    }
-
-    .stat-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 24px;
-      margin-bottom: 20px;
-    }
-
-    .stat-card:nth-child(1) .stat-icon {
-      background: rgba(79, 172, 254, 0.1);
-      color: #4facfe;
-    }
-
-    .stat-card:nth-child(2) .stat-icon {
-      background: rgba(106, 176, 76, 0.1);
-      color: #6ab04c;
-    }
-
-    .stat-card:nth-child(3) .stat-icon {
-      background: rgba(245, 203, 92, 0.1);
-      color: #f5cb5c;
     }
 
     .stat-card h3 {
@@ -211,10 +179,7 @@
       color: #1a2a3a;
     }
 
-    .stat-card p {
-      color: #666;
-      font-size: 15px;
-    }
+    .stat-card p { color: #666; }
 
     /* Content Sections */
     .content-section {
@@ -225,18 +190,6 @@
       box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
     }
 
-    .section-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 25px;
-    }
-
-    .section-header h2 {
-      color: #1a2a3a;
-      font-size: 22px;
-    }
-
     .btn-primary {
       background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
       color: white;
@@ -245,18 +198,13 @@
       border-radius: 10px;
       font-weight: 600;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 8px;
       transition: all 0.3s;
     }
 
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(79, 172, 254, 0.3);
-    }
-
-    /* FORM + SEARCH */
+    /* FORM */
     .admin-tools {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -271,10 +219,6 @@
       outline: none;
       font-size: 15px;
       width: 100%;
-    }
-
-    .admin-tools input:focus {
-      border-color: #4facfe;
     }
 
     .admin-key-box {
@@ -301,11 +245,7 @@
       font-weight: 600;
     }
 
-    .admin-key-box button:hover {
-      opacity: 0.9;
-    }
-
-    /* GRID PDF CARD (dari script.js) */
+    /* PDF GRID */
     #admin-files-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -313,100 +253,36 @@
       margin-top: 20px;
     }
 
-    .pdf-card {
-      background: #f8f9fa;
-      border-radius: 16px;
-      padding: 18px;
-      border: 1px solid #e0e6ed;
-    }
-
-    .pdf-card-top {
-      display: flex;
-      gap: 12px;
-      align-items: center;
+    /* SETTINGS FORM */
+    .setting-row {
       margin-bottom: 15px;
     }
 
-    .pdf-icon {
-      width: 46px;
-      height: 46px;
-      border-radius: 12px;
-      background: rgba(255, 107, 107, 0.1);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #ff6b6b;
-      font-size: 20px;
-    }
-
-    .pdf-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: #1a2a3a;
-      margin-bottom: 4px;
-    }
-
-    .pdf-subtitle {
-      font-size: 13px;
-      color: #777;
-    }
-
-    .pdf-actions {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .btn-preview, .btn-download, .btn-delete {
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: none;
-      cursor: pointer;
+    .setting-row label {
+      display: block;
       font-weight: 600;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 14px;
+      margin-bottom: 6px;
     }
 
-    .btn-preview { background: #4facfe; color: white; }
-    .btn-download { background: #6ab04c; color: white; }
-    .btn-delete { background: #ff6b6b; color: white; }
-
-    .btn-preview:hover, .btn-download:hover, .btn-delete:hover {
-      opacity: 0.9;
-      transform: translateY(-1px);
+    .setting-row input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid #e0e6ed;
+      outline: none;
     }
 
-    /* Responsif */
-    @media (max-width: 1024px) {
-      .sidebar { width: 220px; }
-      .main-content { margin-left: 220px; }
-    }
-
-    @media (max-width: 768px) {
-      .sidebar {
-        transform: translateX(-100%);
-        transition: transform 0.3s;
-      }
-      .sidebar.active { transform: translateX(0); }
-      .main-content { margin-left: 0; }
-      .menu-toggle {
-        display: block;
-        font-size: 24px;
-        cursor: pointer;
-        color: #1a2a3a;
-      }
-      .admin-tools { grid-template-columns: 1fr; }
-    }
+    /* Hidden pages */
+    .page { display: none; }
+    .page.active { display: block; }
   </style>
 
-  <!-- ✅ SCRIPT GLOBAL (neon) -->
+  <!-- ✅ SCRIPT GLOBAL (ambil docs neon) -->
   <script src="script.js" defer></script>
 </head>
 
 <body>
+
   <!-- Sidebar -->
   <div class="sidebar" id="sidebar">
     <div class="logo-area">
@@ -418,13 +294,13 @@
     </div>
 
     <ul class="nav-menu">
-      <li><a href="#" class="active"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
-      <li><a href="#"><i class="fas fa-file-pdf"></i> Dokumen PDF</a></li>
-      <li><a href="#"><i class="fas fa-chart-bar"></i> Statistik</a></li>
-      <li><a href="#"><i class="fas fa-cog"></i> Pengaturan</a></li>
+      <li><a class="active" data-page="dashboard"><i class="fas fa-tachometer-alt"></i> Dashboard</a></li>
+      <li><a data-page="docs"><i class="fas fa-file-pdf"></i> Dokumen PDF</a></li>
+      <li><a data-page="stats"><i class="fas fa-chart-bar"></i> Statistik</a></li>
+      <li><a data-page="settings"><i class="fas fa-cog"></i> Pengaturan</a></li>
     </ul>
 
-    <a href="login.html" class="logout-btn">
+    <a href="login.html" class="logout-btn" id="logoutBtn">
       <i class="fas fa-sign-out-alt"></i>
       <span>Keluar</span>
     </a>
@@ -432,110 +308,197 @@
 
   <!-- Main Content -->
   <div class="main-content">
+
     <!-- Header -->
     <div class="header">
       <div>
-        <h1>Dashboard Admin</h1>
+        <h1 id="pageTitle">Dashboard</h1>
         <p style="color: #666; margin-top: 5px;">Selamat datang kembali, Administrator</p>
       </div>
 
       <div class="user-info">
-        <div class="user-avatar">
-          <i class="fas fa-user"></i>
-        </div>
+        <div class="user-avatar"><i class="fas fa-user"></i></div>
         <div>
-          <div style="font-weight: 600;">Admin Utama</div>
+          <div style="font-weight: 600;" id="adminName">Admin Utama</div>
           <div style="font-size: 13px; color: #666;">admin@pdffx.com</div>
         </div>
-        <div class="menu-toggle" id="menuToggle" style="display: none;">
-          <i class="fas fa-bars"></i>
-        </div>
       </div>
     </div>
 
-    <!-- Stats Grid -->
-    <div class="stats-grid">
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-file-pdf"></i>
+    <!-- ✅ PAGE: DASHBOARD -->
+    <div class="page active" id="dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <h3 id="total-files">0</h3>
+          <p>Total Dokumen PDF</p>
         </div>
-        <h3 id="total-files">0</h3>
-        <p>Total Dokumen PDF</p>
+        <div class="stat-card">
+          <h3 id="total-downloads">0</h3>
+          <p>Total Download</p>
+        </div>
+        <div class="stat-card">
+          <h3 id="total-views">0</h3>
+          <p>Total Dilihat</p>
+        </div>
       </div>
 
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-download"></i>
-        </div>
-        <h3 id="total-downloads">0</h3>
-        <p>Total Download</p>
-      </div>
-
-      <div class="stat-card">
-        <div class="stat-icon">
-          <i class="fas fa-eye"></i>
-        </div>
-        <h3 id="total-views">0</h3>
-        <p>Total Dilihat</p>
+      <div class="content-section">
+        <h2 style="margin-bottom: 10px;">Quick Actions</h2>
+        <p style="color:#666; margin-bottom: 15px;">Aksi cepat untuk admin panel.</p>
+        <button class="btn-primary" onclick="switchPage('docs')">
+          <i class="fas fa-file-pdf"></i> Kelola Dokumen
+        </button>
       </div>
     </div>
 
-    <!-- Dokumen Database Section -->
-    <div class="content-section">
-      <div class="section-header">
-        <h2><i class="fas fa-file-pdf" style="margin-right: 10px; color: #4facfe;"></i> Dokumen dari Database</h2>
-        <div style="font-size: 14px; color: #777;">
+    <!-- ✅ PAGE: DOCS -->
+    <div class="page" id="docs">
+      <div class="content-section">
+        <h2 style="margin-bottom: 15px;">Dokumen dari Database</h2>
+
+        <div style="font-size: 14px; color: #777; margin-bottom: 10px;">
           Last update: <span id="last-update">-</span>
         </div>
+
+        <div class="admin-key-box">
+          <input type="password" id="adminKeyInput" placeholder="Masukkan ADMIN KEY (untuk add/delete)" />
+          <button id="saveAdminKeyBtn"><i class="fas fa-key"></i> Simpan Key</button>
+        </div>
+
+        <div class="admin-tools">
+          <input type="text" id="newTitle" placeholder="Judul Dokumen PDF" />
+          <input type="text" id="newUrl" placeholder="Link Google Drive PDF" />
+        </div>
+
+        <button class="btn-primary" id="addDocBtn">
+          <i class="fas fa-plus"></i> Tambah Dokumen
+        </button>
+
+        <div style="margin-top: 20px;">
+          <input id="admin-search" placeholder="Cari dokumen..."
+                 style="width:100%; padding: 14px; border-radius: 12px; border:1px solid #e0e6ed;">
+        </div>
+
+        <div id="admin-files-grid"></div>
       </div>
-
-      <!-- ✅ ADMIN KEY BOX -->
-      <div class="admin-key-box">
-        <input type="password" id="adminKeyInput" placeholder="Masukkan ADMIN KEY (untuk add/delete)" />
-        <button id="saveAdminKeyBtn"><i class="fas fa-key"></i> Simpan Key</button>
-      </div>
-
-      <!-- ✅ ADD DOC FORM -->
-      <div class="admin-tools">
-        <input type="text" id="newTitle" placeholder="Judul Dokumen PDF" />
-        <input type="text" id="newUrl" placeholder="Link Google Drive PDF" />
-      </div>
-
-      <button class="btn-primary" id="addDocBtn">
-        <i class="fas fa-plus"></i> Tambah Dokumen
-      </button>
-
-      <!-- ✅ SEARCH ADMIN -->
-      <div style="margin-top: 20px;">
-        <input id="admin-search" placeholder="Cari dokumen..." style="width:100%; padding: 14px; border-radius: 12px; border:1px solid #e0e6ed;">
-      </div>
-
-      <!-- ✅ GRID OUTPUT DARI JS -->
-      <div id="admin-files-grid"></div>
     </div>
+
+    <!-- ✅ PAGE: STATS -->
+    <div class="page" id="stats">
+      <div class="content-section">
+        <h2 style="margin-bottom: 10px;">Statistik Database</h2>
+        <p style="color:#666; margin-bottom: 20px;">Data statistik ini diambil dari Neon DB.</p>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3 id="statDocs">0</h3>
+            <p>Total Dokumen</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="statViews">0</h3>
+            <p>Total Views</p>
+          </div>
+          <div class="stat-card">
+            <h3 id="statDownloads">0</h3>
+            <p>Total Downloads</p>
+          </div>
+        </div>
+
+        <button class="btn-primary" id="reloadStats">
+          <i class="fas fa-sync"></i> Refresh Statistik
+        </button>
+      </div>
+    </div>
+
+    <!-- ✅ PAGE: SETTINGS -->
+    <div class="page" id="settings">
+      <div class="content-section">
+        <h2 style="margin-bottom: 10px;">Pengaturan Admin</h2>
+        <p style="color:#666; margin-bottom: 20px;">Simpan konfigurasi sistem dan neon key di localStorage.</p>
+
+        <div class="setting-row">
+          <label>Nama Aplikasi</label>
+          <input type="text" id="setAppName" placeholder="PDF FX Manager">
+        </div>
+
+        <div class="setting-row">
+          <label>Neon Endpoint API</label>
+          <input type="text" id="setApiDocs" placeholder="/api/docs">
+        </div>
+
+        <div class="setting-row">
+          <label>Admin Key (untuk add/delete)</label>
+          <input type="text" id="setAdminKey" placeholder="ADMIN_KEY">
+        </div>
+
+        <button class="btn-primary" id="saveSettings">
+          <i class="fas fa-save"></i> Simpan Pengaturan
+        </button>
+      </div>
+    </div>
+
   </div>
 
-  <!-- ✅ SCRIPT kecil untuk sidebar + logout -->
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const menuToggle = document.getElementById('menuToggle');
-      const sidebar = document.getElementById('sidebar');
+    // ✅ Switch page function
+    function switchPage(pageId) {
+      document.querySelectorAll(".page").forEach(p => p.classList.remove("active"));
+      document.getElementById(pageId).classList.add("active");
 
-      if (menuToggle) {
-        menuToggle.addEventListener('click', function() {
-          sidebar.classList.toggle('active');
-        });
-      }
+      document.querySelectorAll(".nav-menu a").forEach(a => a.classList.remove("active"));
+      document.querySelector(`.nav-menu a[data-page="${pageId}"]`).classList.add("active");
 
-      const logoutBtn = document.querySelector('.logout-btn');
-      if (logoutBtn) {
-        logoutBtn.addEventListener('click', function(e) {
-          if (!confirm('Apakah Anda yakin ingin keluar dari admin panel?')) {
-            e.preventDefault();
-          }
-        });
+      document.getElementById("pageTitle").textContent =
+        pageId === "dashboard" ? "Dashboard" :
+        pageId === "docs" ? "Dokumen PDF" :
+        pageId === "stats" ? "Statistik" : "Pengaturan";
+    }
+
+    // ✅ Sidebar menu click
+    document.querySelectorAll(".nav-menu a").forEach(link => {
+      link.addEventListener("click", () => switchPage(link.dataset.page));
+    });
+
+    // ✅ Logout
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      if (!confirm("Yakin logout?")) return;
+      localStorage.removeItem("ADMIN_KEY");
+      localStorage.removeItem("ADMIN_USERNAME");
+      window.location.href = "login.html";
+    });
+
+    // ✅ Settings save
+    document.getElementById("saveSettings").addEventListener("click", () => {
+      localStorage.setItem("APP_NAME", document.getElementById("setAppName").value.trim());
+      localStorage.setItem("API_DOCS", document.getElementById("setApiDocs").value.trim());
+      localStorage.setItem("ADMIN_KEY", document.getElementById("setAdminKey").value.trim());
+      alert("✅ Pengaturan berhasil disimpan!");
+    });
+
+    // ✅ Prefill settings
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById("adminName").textContent =
+        localStorage.getItem("ADMIN_USERNAME") || "Admin Utama";
+
+      document.getElementById("setAppName").value =
+        localStorage.getItem("APP_NAME") || "PDF FX Manager";
+
+      document.getElementById("setApiDocs").value =
+        localStorage.getItem("API_DOCS") || "/api/docs";
+
+      document.getElementById("setAdminKey").value =
+        localStorage.getItem("ADMIN_KEY") || "";
+    });
+
+    // ✅ Refresh stats button (ambil dari docs yang udah di-load)
+    document.getElementById("reloadStats").addEventListener("click", async () => {
+      if (typeof window.loadDocsFromDB === "function") {
+        await window.loadDocsFromDB(true); // paksa reload
       }
+      alert("✅ Statistik di-refresh");
     });
   </script>
+
 </body>
 </html>
