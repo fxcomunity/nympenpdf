@@ -1,37 +1,26 @@
-import bcrypt from "bcryptjs";
-import { Client } from "pg";
+import { neon } from "@neondatabase/serverless";
 
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
-
-  const { username, password } = req.body || {};
-  if (!username || !password) return res.status(400).json({ error: "username & password wajib" });
-
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  });
-
   try {
-    await client.connect();
+    if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
 
-    const result = await client.query(
-      "SELECT * FROM public.admin_users WHERE username = $1 LIMIT 1",
-      [username]
-    );
+    const { username, password } = req.body;
 
-    await client.end();
+    const sql = neon(process.env.DATABASE_URL);
 
-    if (result.rows.length === 0) return res.status(401).json({ error: "Username salah" });
+    const result = await sql`
+      SELECT * FROM admin_settings
+      WHERE username = ${username} AND password = ${password}
+      LIMIT 1
+    `;
 
-    const user = result.rows[0];
+    if (result.length === 0) {
+      return res.status(401).json({ error: "Username / Password salah!" });
+    }
 
-    const match = await bcrypt.compare(password, user.password_hash);
-    if (!match) return res.status(401).json({ error: "Password salah" });
-
-    return res.status(200).json({ success: true });
+    res.status(200).json({ success: true });
   } catch (err) {
-    try { await client.end(); } catch (_) {}
-    return res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Server error" });
   }
 }
