@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dokumentasi PDF FX</title>
 
-  <!-- ✅ FAVICON -->
+  <!-- ✅ FAVICON (TIDAK DIUBAH) -->
   <link rel="icon" type="image/png"
         href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
 
@@ -55,6 +55,7 @@
     <a href="#contact">Kontak</a>
     <a href="about.html">Tentang</a>
 
+    <!-- ✅ ADMIN AREA (AUTO SWITCH MOBILE) -->
     <div id="mobileAdminArea">
       <a href="login.html" class="mobile-login">
         <i class="fas fa-user-lock"></i> Login Admin
@@ -68,7 +69,6 @@
   <!-- ✅ HERO -->
   <section id="home" class="hero">
     <div class="hero-content container">
-
       <div class="hero-badge reveal">
         <i class="fas fa-file-pdf"></i>
         <span>Dokumentasi PDF Terpercaya</span>
@@ -109,7 +109,6 @@
           <div class="stat-label">Gratis</div>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -119,7 +118,7 @@
       <h2 class="section-title reveal">Dokumen Tersedia</h2>
       <p class="section-subtitle reveal">Cari dan download dokumen yang kamu butuhkan</p>
 
-      <!-- ✅ SEARCH -->
+      <!-- ✅ SEARCH BAR -->
       <div class="search-wrapper reveal">
         <div class="search-input-box">
           <i class="fas fa-search search-icon"></i>
@@ -145,7 +144,6 @@
           <p>Memuat daftar dokumen...</p>
         </div>
       </div>
-
     </div>
   </section>
 
@@ -191,7 +189,7 @@
         </div>
       </div>
 
-      <!-- ✅ FORM -->
+      <!-- ✅ CONTACT FORM -->
       <form id="contact-form" class="contact-form reveal">
         <h3>Kirim Pesan</h3>
         <p class="form-note">Isi formulir berikut — kami akan membalas lewat WhatsApp secepatnya.</p>
@@ -263,12 +261,12 @@
   </div>
 </footer>
 
-<!-- ✅ YEAR -->
+<!-- ✅ SCRIPT: YEAR -->
 <script>
   document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 
-<!-- ✅ MOBILE NAV -->
+<!-- ✅ SCRIPT: MOBILE NAV -->
 <script>
   const btn = document.getElementById("mobileMenuBtn");
   const nav = document.getElementById("mobileNav");
@@ -286,7 +284,7 @@
   });
 </script>
 
-<!-- ✅ REVEAL -->
+<!-- ✅ SCRIPT: REVEAL ANIMATION -->
 <script>
   const reveals = document.querySelectorAll(".reveal");
   const obs = new IntersectionObserver((entries) => {
@@ -298,7 +296,21 @@
   reveals.forEach(el => obs.observe(el));
 </script>
 
-<!-- ✅ PDF LIST SCRIPT -->
+<!-- ✅ FORM → WhatsApp -->
+<script>
+  document.getElementById("contact-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("contact-name").value.trim();
+    const email = document.getElementById("contact-email").value.trim();
+    const msg = document.getElementById("contact-message").value.trim();
+
+    const waText = `Halo Admin!%0A%0ANama: ${name}%0AEmail: ${email || "-"}%0APesan: ${msg}`;
+    window.open(`https://wa.me/62895404147521?text=${waText}`, "_blank");
+  });
+</script>
+
+<!-- ✅ MAIN SCRIPT -->
 <script src="script.js"></script>
 
 </body>
