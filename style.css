@@ -617,3 +617,31 @@ button { font-family: inherit; }
   .search-btn { width: 100%; border-radius: 999px; height: 50px; }
   .pdf-actions { grid-template-columns: 1fr; }
 }
+
+/* =========================================================
+   ✅ EXTRA ADDITION (Wajib supaya loading bagus & footer aman)
+========================================================= */
+
+.loading-state {
+  width: 100%;
+  padding: 34px 22px;
+  border-radius: 18px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.10);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(255,255,255,0.72);
+}
+
+.loading-state i {
+  font-size: 24px;
+}
+
+/* extra spacing biar docs section tidak nabrak footer */
+#documents {
+  padding-bottom: 90px;
+}
