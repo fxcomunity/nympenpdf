@@ -1,14 +1,8 @@
 {
   "name": "nympenpdf",
   "version": "1.0.0",
-  "scripts": {
-    "dev": "vercel dev",
-    "start": "vercel start"
-  },
+  "type": "module",
   "dependencies": {
     "pg": "^8.11.3"
-  },
-  "devDependencies": {
-    "vercel": "^28.18.3"
   }
 }
