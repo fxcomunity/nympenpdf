@@ -1,40 +1,364 @@
-import { Client } from "pg";
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dokumentasi PDF FX</title>
 
-export default async function handler(req, res) {
-  // Set CORS headers
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
-  
-  // Handle preflight
-  if (req.method === 'OPTIONS') {
-    return res.status(200).end();
-  }
-  
-  if (req.method !== 'GET') {
-    return res.status(405).json({ error: "Method not allowed" });
-  }
+  <!-- ✅ FAVICON (TIDAK DIUBAH) -->
+  <link rel="icon" type="image/png"
+        href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s">
 
-  const client = new Client({
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css?v=9999" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+</head>
+
+<body class="public-theme">
+
+<!-- ✅ HEADER -->
+<header class="site-header">
+  <nav class="nav-container">
+
+    <a class="logo logo-public" href="index.html">
+      <img class="logo-img"
+           src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRaNQoFBuA6hRPUfrQyczwil_SnZCIMBa204Q&s"
+           alt="Logo">
+      <span>Dokumentasi PDF FX</span>
+    </a>
+
+    <!-- ✅ DESKTOP NAV -->
+    <ul class="nav-links desktop-nav">
+      <li><a href="#home">Beranda</a></li>
+      <li><a href="#documents">Dokumen</a></li>
+      <li><a href="#contact">Kontak</a></li>
+      <li><a href="about.html">Tentang</a></li>
+
+      <!-- ✅ ADMIN AREA (AUTO SWITCH: LOGIN / PP ADMIN) -->
+      <li id="navAdminArea">
+        <a href="login.html" class="nav-login-btn" aria-label="Login Admin">
+          <i class="fas fa-user-lock"></i>
+        </a>
+      </li>
+    </ul>
+
+    <!-- ✅ MOBILE BUTTON -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Buka menu">
+      <i class="fas fa-bars"></i>
+    </button>
+  </nav>
+
+  <!-- ✅ MOBILE NAV -->
+  <div class="mobile-nav" id="mobileNav">
+    <a href="#home">Beranda</a>
+    <a href="#documents">Dokumen</a>
+    <a href="#contact">Kontak</a>
+    <a href="about.html">Tentang</a>
+
+    <!-- ✅ ADMIN AREA (AUTO SWITCH MOBILE) -->
+    <div id="mobileAdminArea">
+      <a href="login.html" class="mobile-login">
+        <i class="fas fa-user-lock"></i> Login Admin
+      </a>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ✅ HERO -->
+  <section id="home" class="hero">
+    <div class="hero-content container">
+      <div class="hero-badge reveal">
+        <i class="fas fa-file-pdf"></i>
+        <span>Dokumentasi PDF Terpercaya</span>
+      </div>
+
+      <h1 class="hero-title reveal">
+        <span class="gradient-text">Pusat Unduhan</span><br>
+        Dokumen PDF Resmi
+      </h1>
+
+      <p class="hero-description reveal">
+        Akses semua dokumen resmi dan materi trading terbaru dengan mudah.
+        Download dan preview dokumen PDF dalam hitungan detik.
+      </p>
+
+      <div class="hero-actions reveal">
+        <a href="#documents" class="btn-primary">
+          <i class="fas fa-search"></i>
+          <span>Lihat Dokumen</span>
+        </a>
+        <a href="#contact" class="btn-secondary">
+          <i class="fas fa-envelope"></i>
+          <span>Hubungi Kami</span>
+        </a>
+      </div>
+
+      <div class="hero-stats reveal">
+        <div class="stat-item">
+          <div class="stat-number" id="total-docs">0</div>
+          <div class="stat-label">Dokumen Tersedia</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">24/7</div>
+          <div class="stat-label">Akses Selalu</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-number">100%</div>
+          <div class="stat-label">Gratis</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ DOCUMENTS -->
+  <section id="documents">
+    <div class="container">
+      <h2 class="section-title reveal">Dokumen Tersedia</h2>
+      <p class="section-subtitle reveal">Cari dan download dokumen yang kamu butuhkan</p>
+
+      <!-- ✅ SEARCH BAR -->
+      <div class="search-wrapper reveal">
+        <div class="search-input-box">
+          <i class="fas fa-search search-icon"></i>
+
+          <input type="text" id="searchInput"
+                 placeholder="Cari dokumen PDF..."
+                 autocomplete="off" />
+
+          <button type="button" id="clearSearch" class="clear-btn" aria-label="Hapus pencarian">
+            <i class="fas fa-times"></i>
+          </button>
+        </div>
+
+        <button type="button" id="searchBtn" class="search-btn" aria-label="Cari Dokumen">
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- ✅ LIST PDF -->
+      <div class="documents-grid reveal" id="public-files-container">
+        <div class="loading-state">
+          <i class="fas fa-spinner fa-spin"></i>
+          <p>Memuat daftar dokumen...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ✅ CONTACT -->
+  <section id="contact" class="contact-section">
+    <div class="container contact-wrapper">
+
+      <div class="contact-info reveal">
+        <h2>Butuh Bantuan?</h2>
+        <p class="lead">
+          Kami siap membantu seputar dokumen, permintaan update, atau masalah teknis.
+          Kirim pesan lewat WhatsApp atau email agar cepat dibalas.
+        </p>
+
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fab fa-whatsapp"></i></div>
+          <div>
+            <h4>WhatsApp</h4>
+            <a class="contact-link" href="https://wa.me/62895404147521" target="_blank">
+              +62 895-4041-47521
+            </a>
+            <p class="muted">Respon cepat selama jam layanan</p>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-envelope"></i></div>
+          <div>
+            <h4>Email</h4>
+            <a class="contact-link" href="mailto:aqsholhalqi2@gmail.com">
+              aqsholhalqi2@gmail.com
+            </a>
+            <p class="muted">Gunakan untuk permintaan resmi</p>
+          </div>
+        </div>
+
+        <div class="contact-card">
+          <div class="contact-card-icon"><i class="fas fa-map-marker-alt"></i></div>
+          <div>
+            <h4>Alamat</h4>
+            <p class="muted">Jakarta, Indonesia</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ CONTACT FORM -->
+      <form id="contact-form" class="contact-form reveal">
+        <h3>Kirim Pesan</h3>
+        <p class="form-note">Isi formulir berikut — kami akan membalas lewat WhatsApp secepatnya.</p>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="contact-name">Nama Lengkap</label>
+            <input type="text" id="contact-name" required placeholder="Nama kamu">
+          </div>
+          <div class="form-group">
+            <label for="contact-email">Email (opsional)</label>
+            <input type="email" id="contact-email" placeholder="email@contoh.com">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="contact-message">Pesan</label>
+          <textarea id="contact-message" rows="5" required placeholder="Tulis pesan kamu..."></textarea>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          <i class="fab fa-whatsapp"></i> Kirim Pesan via WhatsApp
+        </button>
+      </form>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ✅ FOOTER -->
+<footer class="main-footer">
+  <div class="footer-grid container">
+    <div class="footer-col">
+      <h3>Dokumentasi PDF FX</h3>
+      <p class="footer-desc">
+        Pusat unduhan dan dokumentasi PDF trading.
+        Semua materi tersedia untuk belajar dan analisa.
+      </p>
+    </div>
+
+    <div class="footer-col">
+      <h4>Menu</h4>
+      <ul class="footer-links">
+        <li><a href="#home">Beranda</a></li>
+        <li><a href="#documents">Dokumen</a></li>
+        <li><a href="#contact">Kontak</a></li>
+        <li><a href="about.html">Tentang Kami</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Komunitas</h4>
+      <ul class="footer-links">
+        <li>
+          <a href="https://chat.whatsapp.com/KnkESJgEUKT5PEki4SpDD0" target="_blank">
+            <i class="fab fa-whatsapp"></i> Grub Fx Community
+          </a>
+        </li>
+      </ul>
+      <p class="footer-small">
+        Gabung komunitas untuk diskusi & update materi terbaru.
+      </p>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <p>© <span id="year"></span> Dokumentasi PDF FX. All rights reserved.</p>
+  </div>
+</footer>
+
+<!-- ✅ SCRIPT: YEAR -->
+<script>
+  document.getElementById("year").textContent = new Date().getFullYear();
+</script>
+
+<!-- ✅ SCRIPT: MOBILE NAV -->
+<script>
+  const btn = document.getElementById("mobileMenuBtn");
+  const nav = document.getElementById("mobileNav");
+
+  btn.addEventListener("click", () => {
+    nav.classList.toggle("show");
+    btn.classList.toggle("active");
   });
 
-  try {
-    await client.connect();
+  nav.querySelectorAll("a").forEach(a => {
+    a.addEventListener("click", () => {
+      nav.classList.remove("show");
+      btn.classList.remove("active");
+    });
+  });
+</script>
 
-    const result = await client.query(`
-      SELECT id, title, url, views, downloads,
-             created_at, updated_at
-      FROM public.documents
-      ORDER BY id DESC
-    `);
+<!-- ✅ SCRIPT: REVEAL ANIMATION -->
+<script>
+  const reveals = document.querySelectorAll(".reveal");
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) e.target.classList.add("show");
+    });
+  }, { threshold: 0.15 });
 
-    await client.end();
-    return res.status(200).json(result.rows);
-  } catch (err) {
-    console.error("Docs error:", err);
-    try { await client.end(); } catch (_) {}
-    return res.status(500).json({ error: err.message });
+  reveals.forEach(el => obs.observe(el));
+</script>
+
+<!-- ✅ SCRIPT: ADMIN PROFILE + MAINTENANCE -->
+<script>
+  async function checkMaintenanceMode() {
+    try {
+      const res = await fetch("/api/settings");
+      const data = await res.json();
+
+      // ✅ kalau maintenance ON dan admin tidak login
+      if (data.maintenance === true && !localStorage.getItem("ADMIN_KEY")) {
+        window.location.href = "maintenance.html";
+      }
+    } catch (err) {
+      console.log("Maintenance check gagal:", err);
+    }
   }
-}
+
+  function setupAdminProfileUI() {
+    const adminKey = localStorage.getItem("ADMIN_KEY");
+    const adminName = localStorage.getItem("ADMIN_USERNAME") || "Admin";
+
+    const navAdminArea = document.getElementById("navAdminArea");
+    const mobileAdminArea = document.getElementById("mobileAdminArea");
+
+    // ✅ kalau admin sudah login
+    if (adminKey) {
+      const avatarHTML = `
+        <a href="admin.html" class="nav-avatar-btn"
+           style="display:flex;align-items:center;gap:10px;color:white;text-decoration:none;">
+          <div style="width:36px;height:36px;border-radius:50%;background:#00f2fe;
+                      display:flex;align-items:center;justify-content:center;
+                      font-weight:700;color:#1a2a3a;">
+            ${adminName.charAt(0).toUpperCase()}
+          </div>
+          <span style="font-size:14px;font-weight:600;">${adminName}</span>
+        </a>
+      `;
+
+      if (navAdminArea) navAdminArea.innerHTML = avatarHTML;
+
+      if (mobileAdminArea) {
+        mobileAdminArea.innerHTML = `
+          <a href="admin.html" class="mobile-login"
+             style="display:flex;align-items:center;gap:10px;">
+            <div style="width:32px;height:32px;border-radius:50%;background:#00f2fe;
+                        display:flex;align-items:center;justify-content:center;
+                        font-weight:700;color:#1a2a3a;">
+              ${adminName.charAt(0).toUpperCase()}
+            </div>
+            Dashboard Admin
+          </a>
+        `;
+      }
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", async () => {
+    await checkMaintenanceMode();
+    setupAdminProfileUI();
+  });
+</script>
+
+<!-- ✅ MAIN SCRIPT (ambil pdf dari neon) -->
+<script src="script.js"></script>
+
+</body>
+</html>
