@@ -15,6 +15,16 @@ function setAdminKey(key) {
 }
 
 // =====================================================
+// DEVICE HELPER ✅ (HP / TABLET / DESKTOP)
+// =====================================================
+function getDeviceType() {
+  const w = window.innerWidth;
+  if (w <= 600) return "mobile";
+  if (w <= 1024) return "tablet";
+  return "desktop";
+}
+
+// =====================================================
 // DRIVE HELPERS
 // =====================================================
 function extractDriveId(url) {
@@ -47,7 +57,6 @@ async function checkMaintenance() {
       window.location.href = "maintenance.html";
       return true;
     }
-
     return false;
   } catch (err) {
     console.log("Maintenance check error:", err);
@@ -107,6 +116,24 @@ async function loadDocsFromDB() {
 }
 
 // =====================================================
+// ✅ RESPONSIVE GRID APPLY (PUBLIC & ADMIN)
+// =====================================================
+function applyGridResponsive(containerId) {
+  const grid = document.getElementById(containerId);
+  if (!grid) return;
+
+  const device = getDeviceType();
+
+  if (device === "mobile") {
+    grid.style.gridTemplateColumns = "1fr";
+  } else if (device === "tablet") {
+    grid.style.gridTemplateColumns = "repeat(2, 1fr)";
+  } else {
+    grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
+  }
+}
+
+// =====================================================
 // RENDER PUBLIC (VIEWER TRACKING)
 // =====================================================
 function renderPublic(list) {
@@ -114,6 +141,8 @@ function renderPublic(list) {
   if (!publicContainer) return;
 
   publicContainer.innerHTML = "";
+
+  applyGridResponsive("public-files-container");
 
   if (!list.length) {
     publicContainer.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
@@ -123,6 +152,9 @@ function renderPublic(list) {
   list.forEach(([title, url, id]) => {
     const card = document.createElement("div");
     card.className = "pdf-card";
+
+    const device = getDeviceType();
+    const actionLayout = device === "mobile" ? "flex-direction:column;" : "";
 
     card.innerHTML = `
       <div class="pdf-card-top">
@@ -135,7 +167,7 @@ function renderPublic(list) {
         </div>
       </div>
 
-      <div class="pdf-actions">
+      <div class="pdf-actions" style="${actionLayout}">
         <a class="btn-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
@@ -159,6 +191,8 @@ function renderAdmin(list) {
 
   adminGrid.innerHTML = "";
 
+  applyGridResponsive("admin-files-grid");
+
   if (!list.length) {
     adminGrid.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
     return;
@@ -167,6 +201,9 @@ function renderAdmin(list) {
   list.forEach(([title, url, id, views, downloads]) => {
     const card = document.createElement("div");
     card.className = "pdf-card admin-pdf-card";
+
+    const device = getDeviceType();
+    const actionLayout = device === "mobile" ? "flex-direction:column;" : "";
 
     card.innerHTML = `
       <div class="pdf-card-top">
@@ -181,7 +218,7 @@ function renderAdmin(list) {
         </div>
       </div>
 
-      <div class="pdf-actions">
+      <div class="pdf-actions" style="${actionLayout}">
         <a class="btn-preview admin-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
@@ -233,9 +270,6 @@ function initPublicSearch() {
   const searchInput = document.getElementById("searchInput");
   if (!searchInput) return;
 
-  const searchBtn = document.getElementById("searchBtn");
-  const clearSearch = document.getElementById("clearSearch");
-
   function filterPublic() {
     const keyword = searchInput.value.toLowerCase().trim();
     const filtered = pdfList.filter(([title]) =>
@@ -245,15 +279,6 @@ function initPublicSearch() {
   }
 
   searchInput.addEventListener("input", filterPublic);
-  searchInput.addEventListener("keyup", (e) => {
-    if (e.key === "Enter") filterPublic();
-  });
-
-  searchBtn?.addEventListener("click", filterPublic);
-  clearSearch?.addEventListener("click", () => {
-    searchInput.value = "";
-    filterPublic();
-  });
 }
 
 // =====================================================
@@ -320,12 +345,7 @@ function initAdminAddDoc() {
     const result = await response.json();
     if (result.error) return alert("❌ " + result.error);
 
-    if (result.duplicated) {
-      alert("⚠️ Dokumen sudah ada (URL duplikat).");
-    } else {
-      alert("✅ Dokumen berhasil ditambahkan!");
-    }
-
+    alert("✅ Dokumen berhasil ditambahkan!");
     titleInput.value = "";
     urlInput.value = "";
     loadDocsFromDB();
@@ -361,4 +381,10 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // realtime update tiap 3 detik (matikan kalau berat)
   setInterval(loadDocsFromDB, 3000);
+
+  // ✅ re-render kalau user rotate layar / resize
+  window.addEventListener("resize", () => {
+    renderPublic(pdfList);
+    renderAdmin(pdfList);
+  });
 });
