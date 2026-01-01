@@ -1,66 +1,53 @@
 // =====================================================
 // PDF LIST (DARI DATABASE NEON)
 // =====================================================
-let pdfList = [];
+let pdfList = []; // format: [title, url, id, views, downloads]
 
 // =====================================================
-// ADMIN KEY (PRIVATE)
+// ADMIN KEY (PRIVATE) - disimpan di localStorage
 // =====================================================
 function getAdminKey() {
   return localStorage.getItem("ADMIN_KEY") || "";
 }
+
 function setAdminKey(key) {
   localStorage.setItem("ADMIN_KEY", key);
 }
 
 // =====================================================
-// ✅ DEVICE HELPER
+// DRIVE HELPERS
 // =====================================================
-function getDeviceType() {
-  const w = window.innerWidth;
-  if (w <= 600) return "mobile";
-  if (w <= 1024) return "tablet";
-  return "desktop";
+function extractDriveId(url) {
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  return match ? match[1] : null;
+}
+
+function drivePreview(url) {
+  const id = extractDriveId(url);
+  return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+}
+
+function driveDownload(url) {
+  const id = extractDriveId(url);
+  return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
 }
 
 // =====================================================
-// ✅ APPLY GRID RESPONSIVE
-// =====================================================
-function applyGridResponsive(containerId) {
-  const grid = document.getElementById(containerId);
-  if (!grid) return;
-
-  const device = getDeviceType();
-
-  if (device === "mobile") {
-    grid.style.gridTemplateColumns = "1fr";
-  } else if (device === "tablet") {
-    grid.style.gridTemplateColumns = "repeat(2, 1fr)";
-  } else {
-    grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(250px, 1fr))";
-  }
-}
-
-// =====================================================
-// ✅ MAINTENANCE CHECK
+// ✅ MAINTENANCE CHECK (NEON SETTINGS)
 // =====================================================
 async function checkMaintenance() {
   try {
     const res = await fetch("/api/settings");
-    const text = await res.text();
+    const data = await res.json();
 
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.error("❌ /api/settings bukan JSON:", text);
-      return false;
-    }
+    const isAdmin = !!getAdminKey();
 
-    if (data.maintenance === true && !getAdminKey()) {
+    // kalau maintenance ON & bukan admin
+    if (data.maintenance === true && !isAdmin) {
       window.location.href = "maintenance.html";
       return true;
     }
+
     return false;
   } catch (err) {
     console.log("Maintenance check error:", err);
@@ -69,25 +56,19 @@ async function checkMaintenance() {
 }
 
 // =====================================================
-// ✅ LOAD DOCS FROM NEON
+// LOAD DATA FROM API (NEON DB)
 // =====================================================
 async function loadDocsFromDB() {
   try {
     const res = await fetch("/api/docs");
-    const text = await res.text();
+    const data = await res.json();
 
-    console.log("✅ API RAW /api/docs:", text);
-
-    let data;
-    try {
-      data = JSON.parse(text);
-    } catch {
-      console.error("❌ API bukan JSON. Kemungkinan /api/docs 404:", text);
+    if (!Array.isArray(data)) {
+      console.error("Invalid response:", data);
       return;
     }
 
-    if (!Array.isArray(data)) return console.error("Invalid response:", data);
-
+    // convert DB rows => format array lama
     pdfList = data.map((d) => [
       d.title,
       d.url,
@@ -96,15 +77,21 @@ async function loadDocsFromDB() {
       d.downloads || 0,
     ]);
 
-    // update totals
-    document.getElementById("total-docs")?.textContent = pdfList.length;
-    document.getElementById("total-files")?.textContent = pdfList.length;
-
+    // Total views / downloads dari DB
     const totalViews = data.reduce((sum, d) => sum + (d.views || 0), 0);
     const totalDownloads = data.reduce((sum, d) => sum + (d.downloads || 0), 0);
 
-    document.getElementById("total-views")?.textContent = totalViews;
-    document.getElementById("total-downloads")?.textContent = totalDownloads;
+    const viewsEl = document.getElementById("total-views");
+    if (viewsEl) viewsEl.textContent = totalViews.toLocaleString("id-ID");
+
+    const downloadsEl = document.getElementById("total-downloads");
+    if (downloadsEl) downloadsEl.textContent = totalDownloads.toLocaleString("id-ID");
+
+    const totalDocs = document.getElementById("total-files");
+    if (totalDocs) totalDocs.textContent = pdfList.length.toLocaleString("id-ID");
+
+    const totalDocsPublic = document.getElementById("total-docs");
+    if (totalDocsPublic) totalDocsPublic.textContent = pdfList.length.toLocaleString("id-ID");
 
     renderPublic(pdfList);
     renderAdmin(pdfList);
@@ -114,24 +101,22 @@ async function loadDocsFromDB() {
     initContactForm();
     initAdminKeyPrompt();
     initAdminAddDoc();
-
   } catch (err) {
-    console.error("❌ Gagal load Neon DB:", err);
+    console.error("Gagal load data dari Neon:", err);
   }
 }
 
 // =====================================================
-// ✅ RENDER PUBLIC
+// RENDER PUBLIC (VIEWER TRACKING)
 // =====================================================
 function renderPublic(list) {
-  const container = document.getElementById("public-files-container");
-  if (!container) return;
+  const publicContainer = document.getElementById("public-files-container");
+  if (!publicContainer) return;
 
-  container.innerHTML = "";
-  applyGridResponsive("public-files-container");
+  publicContainer.innerHTML = "";
 
   if (!list.length) {
-    container.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
+    publicContainer.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
     return;
   }
 
@@ -141,7 +126,9 @@ function renderPublic(list) {
 
     card.innerHTML = `
       <div class="pdf-card-top">
-        <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+        <div class="pdf-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
         <div class="pdf-info">
           <h4 class="pdf-title">${title}</h4>
           <p class="pdf-subtitle">Dokumen PDF • FX Material</p>
@@ -152,28 +139,28 @@ function renderPublic(list) {
         <a class="btn-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
+
         <a class="btn-download" href="viewer.html?id=${id}&type=download" target="_blank">
           <i class="fas fa-download"></i> Download
         </a>
       </div>
     `;
 
-    container.appendChild(card);
+    publicContainer.appendChild(card);
   });
 }
 
 // =====================================================
-// ✅ RENDER ADMIN
+// RENDER ADMIN + DELETE BUTTON
 // =====================================================
 function renderAdmin(list) {
-  const grid = document.getElementById("admin-files-grid");
-  if (!grid) return;
+  const adminGrid = document.getElementById("admin-files-grid");
+  if (!adminGrid) return;
 
-  grid.innerHTML = "";
-  applyGridResponsive("admin-files-grid");
+  adminGrid.innerHTML = "";
 
   if (!list.length) {
-    grid.innerHTML = `<div class="loading-state">Tidak ada dokumen admin ditemukan.</div>`;
+    adminGrid.innerHTML = `<div class="loading-state">Tidak ada dokumen ditemukan.</div>`;
     return;
   }
 
@@ -183,10 +170,14 @@ function renderAdmin(list) {
 
     card.innerHTML = `
       <div class="pdf-card-top">
-        <div class="pdf-icon"><i class="fas fa-file-pdf"></i></div>
+        <div class="pdf-icon">
+          <i class="fas fa-file-pdf"></i>
+        </div>
         <div class="pdf-info">
           <h4 class="pdf-title">${title}</h4>
-          <p class="pdf-subtitle">Views: <b>${views}</b> • Downloads: <b>${downloads}</b></p>
+          <p class="pdf-subtitle">
+            Views: <b>${views}</b> • Downloads: <b>${downloads}</b>
+          </p>
         </div>
       </div>
 
@@ -194,15 +185,18 @@ function renderAdmin(list) {
         <a class="btn-preview admin-preview" href="viewer.html?id=${id}&type=view" target="_blank">
           <i class="fas fa-eye"></i> Preview
         </a>
+
         <a class="btn-download admin-download" href="viewer.html?id=${id}&type=download" target="_blank">
           <i class="fas fa-download"></i> Download
         </a>
+
         <button class="btn-delete" data-id="${id}">
           <i class="fas fa-trash"></i> Delete
         </button>
       </div>
     `;
 
+    // delete handler
     card.querySelector(".btn-delete").addEventListener("click", async () => {
       if (!confirm("Yakin mau hapus dokumen ini?")) return;
 
@@ -225,15 +219,139 @@ function renderAdmin(list) {
       loadDocsFromDB();
     });
 
-    grid.appendChild(card);
+    adminGrid.appendChild(card);
   });
 
-  document.getElementById("last-update")?.textContent =
-    new Date().toLocaleString("id-ID");
+  const lastUpdate = document.getElementById("last-update");
+  if (lastUpdate) lastUpdate.textContent = new Date().toLocaleString("id-ID");
 }
 
 // =====================================================
-// ✅ INIT
+// SEARCH PUBLIC
+// =====================================================
+function initPublicSearch() {
+  const searchInput = document.getElementById("searchInput");
+  if (!searchInput) return;
+
+  const searchBtn = document.getElementById("searchBtn");
+  const clearSearch = document.getElementById("clearSearch");
+
+  function filterPublic() {
+    const keyword = searchInput.value.toLowerCase().trim();
+    const filtered = pdfList.filter(([title]) =>
+      title.toLowerCase().includes(keyword)
+    );
+    renderPublic(filtered);
+  }
+
+  searchInput.addEventListener("input", filterPublic);
+  searchInput.addEventListener("keyup", (e) => {
+    if (e.key === "Enter") filterPublic();
+  });
+
+  searchBtn?.addEventListener("click", filterPublic);
+  clearSearch?.addEventListener("click", () => {
+    searchInput.value = "";
+    filterPublic();
+  });
+}
+
+// =====================================================
+// SEARCH ADMIN
+// =====================================================
+function initAdminSearch() {
+  const adminSearch = document.getElementById("admin-search");
+  if (!adminSearch) return;
+
+  adminSearch.addEventListener("input", () => {
+    const keyword = adminSearch.value.toLowerCase().trim();
+    const filtered = pdfList.filter(([title]) =>
+      title.toLowerCase().includes(keyword)
+    );
+    renderAdmin(filtered);
+  });
+}
+
+// =====================================================
+// ADMIN KEY INPUT
+// =====================================================
+function initAdminKeyPrompt() {
+  const input = document.getElementById("adminKeyInput");
+  const saveBtn = document.getElementById("saveAdminKeyBtn");
+  if (!input || !saveBtn) return;
+
+  input.value = getAdminKey();
+
+  saveBtn.addEventListener("click", () => {
+    const key = input.value.trim();
+    if (!key) return alert("ADMIN KEY tidak boleh kosong!");
+    setAdminKey(key);
+    alert("✅ ADMIN KEY tersimpan!");
+  });
+}
+
+// =====================================================
+// ADMIN ADD DOC (PRIVATE)
+// =====================================================
+function initAdminAddDoc() {
+  const addBtn = document.getElementById("addDocBtn");
+  if (!addBtn) return;
+
+  addBtn.addEventListener("click", async () => {
+    const titleInput = document.getElementById("newTitle");
+    const urlInput = document.getElementById("newUrl");
+
+    const title = titleInput?.value.trim();
+    const url = urlInput?.value.trim();
+    const adminKey = getAdminKey();
+
+    if (!adminKey) return alert("⚠️ Masukkan ADMIN KEY dulu!");
+    if (!title || !url) return alert("Judul dan URL wajib diisi!");
+
+    const response = await fetch("/api/add-doc", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-admin-key": adminKey,
+      },
+      body: JSON.stringify({ title, url }),
+    });
+
+    const result = await response.json();
+    if (result.error) return alert("❌ " + result.error);
+
+    if (result.duplicated) {
+      alert("⚠️ Dokumen sudah ada (URL duplikat).");
+    } else {
+      alert("✅ Dokumen berhasil ditambahkan!");
+    }
+
+    titleInput.value = "";
+    urlInput.value = "";
+    loadDocsFromDB();
+  });
+}
+
+// =====================================================
+// CONTACT FORM -> WA
+// =====================================================
+function initContactForm() {
+  const contactForm = document.getElementById("contact-form");
+  if (!contactForm) return;
+
+  contactForm.addEventListener("submit", function (e) {
+    e.preventDefault();
+    const name = document.getElementById("contact-name").value;
+    const email = document.getElementById("contact-email").value;
+    const msg = document.getElementById("contact-message").value;
+
+    const text = `Halo Admin, saya ${name}%0AEmail: ${email}%0A%0APesan:%0A${msg}`;
+    window.open(`https://wa.me/62895404147521?text=${text}`, "_blank");
+  });
+}
+
+// =====================================================
+// INIT ✅ + POLLING REALTIME (OPSIONAL)
 // =====================================================
 document.addEventListener("DOMContentLoaded", async () => {
   const isMaintenance = await checkMaintenance();
@@ -241,8 +359,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   await loadDocsFromDB();
 
-  window.addEventListener("resize", () => {
-    renderPublic(pdfList);
-    renderAdmin(pdfList);
-  });
+  // realtime update tiap 3 detik (matikan kalau berat)
+  setInterval(loadDocsFromDB, 3000);
 });
